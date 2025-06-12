@@ -1,0 +1,965 @@
+<html>
+
+<head>
+  <style>
+    /* START CHECKBOX ************************************************* */
+    .checkbox-container {
+      display: block;
+      position: relative;
+      padding-left: 22px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      font-size: 22px;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+
+      font-family: "Frutiger for UBS Web";
+      font-size: var(--controls-fontsize-label-compact, 16px);
+      font-style: normal;
+      font-weight: 400;
+      line-height: var(--controls-lineheight-label-compact, 18px);
+    }
+
+    .checkbox-container input {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+      height: 0;
+      width: 0;
+
+
+    }
+
+    .checkmark {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 16px;
+      width: 16px;
+      border-radius: 2px;
+      background-color: white;
+      border: #1C1C1C solid 1px;
+    }
+
+    .checkbox-container:hover input~.checkmark {
+      background-color: white;
+    }
+
+    .checkbox-container input:checked~.checkmark {
+      background-color: var(--controls-checkbox-background-selected, #1C1C1C);
+    }
+
+    .checkmark:after {
+      content: "";
+      position: absolute;
+      display: none;
+    }
+
+    .checkbox-container input:checked~.checkmark:after {
+      display: block;
+    }
+
+    .checkbox-container .checkmark:after {
+      left: 5px;
+      top: 2px;
+      width: 3px;
+      height: 8px;
+      border: solid white;
+      border-width: 0 3px 3px 0;
+      -webkit-transform: rotate(45deg);
+      -ms-transform: rotate(45deg);
+      transform: rotate(45deg);
+    }
+
+    /* END CHECKBOX ************************************************* */
+    /* begin ANCHOR  ************************************************* */
+    a {
+      color: var(--link-text, #DA0000);
+      cursor: pointer;
+      font-family: var(--Text-fontfamily, "Frutiger for UBS Web");
+      font-size: var(--Text-body-fontsize-lg, 16px);
+      font-style: normal;
+      font-weight: 400;
+      line-height: var(--Text-body-lineheight-lg, 24px);
+      text-decoration-line: unset;
+
+      &:hover {
+        text-decoration-line: underline;
+      }
+
+    }
+
+    /* END ANCHOR ************************************************* */
+    /* BEGIN BUTTON ************************************************* */
+    .primary-button {
+      cursor: pointer;
+      height: var(--button-height, 32px);
+      padding: var(--button-padding-vertical, 10px) var(--button-padding-horizontal, 12px);
+      justify-content: center;
+      align-items: center;
+      border-radius: 4px;
+      background: var(--button-primary-background, #404040);
+      border: none;
+      gap: var(--button-gap-icon, 8px);
+      /* Button/label-compact */
+      color: var(--generic-text-alternate, #FFF);
+      font-feature-settings: 'liga' off, 'clig' off;
+      /* Button/label */
+      font-family: var(--Text-fontfamily, "Frutiger for UBS Web");
+      font-size: var(--button-fontsize-text, 14px);
+      font-style: normal;
+      font-weight: 500;
+      line-height: var(--button-lineheight-text, 12px);
+      /* 142.857% */
+    }
+
+    .primary-button.disabled {
+      background: var(--generic-background-disabled, #D7D7D7);
+      cursor: auto;
+    }
+
+    .secondary-button {
+      cursor: pointer;
+
+      height: var(--button-height, 32px);
+      padding: var(--button-padding-vertical, 10px) var(--button-padding-horizontal, 12px);
+      justify-content: center;
+      align-items: center;
+      border-radius: 4px;
+      background: var(--button-primary-background, #404040);
+      border: none;
+      gap: var(--button-gap-icon, 8px);
+      /* Button/label-compact */
+      color: var(--generic-text-alternate, #FFF);
+      font-feature-settings: 'liga' off, 'clig' off;
+      /* Button/label */
+      font-family: var(--Text-fontfamily, "Frutiger for UBS Web");
+      font-size: var(--button-fontsize-text, 14px);
+      font-style: normal;
+      font-weight: 500;
+      line-height: var(--button-lineheight-text, 12px);
+      /* 142.857% */
+
+      color: var(--generic-text-primary, #1C1C1C);
+      border: 1px solid var(--button-secondary-outline, #CCCABC);
+      background: var(--button-primary-background, #fff);
+
+    }
+
+    input[type="checkbox"] {
+
+      >label {
+        color: red;
+      }
+
+    }
+
+    /* END BUTTON ************************************************* */
+
+    /* BEGIN TABLE ************************************************* */
+    table {
+      border-collapse: collapse;
+
+      width: calc(100% - 12px);
+      margin-bottom: 20px;
+      color: #1c1c1c;
+      font-size: 12px;
+
+      tr {
+        border-bottom: 1px solid #d7d7d7;
+        line-height: 32px;
+
+        th {
+          font-weight: 500;
+          text-align: left;
+
+        }
+      }
+    }
+
+    /* END TABLE ************************************************* */
+
+    /* BEGIN DIALOG ************************************************* */
+    .dialog {
+      border-radius: var(--overlay-message-radius, 8px);
+      background: var(--overlay-background, #FFF);
+      box-shadow: 0px 0px 16px 0px rgba(0, 0, 0, 0.24);
+      padding: var(--overlay-padding-vertical, 32px) var(--overlay-message-padding-horizontal, 48px);
+      border: none;
+
+
+    }
+
+    .dialog-content {
+      display: flex;
+      align-items: flex-start;
+      gap: 24px;
+      align-self: stretch;
+
+      svg {
+        width: 48px;
+        height: 48px;
+        margin-top: 10px;
+      }
+    }
+
+    /* END DIALOG ************************************************* */
+
+    /* BEGIN LAYOUT ************************************************* */
+    .header {
+      display: flex;
+      padding: var(--header-header-margin-vertical, 8px) 0px;
+      align-items: center;
+      gap: var(--header-header-margin-hotizontal, 12px);
+      flex: 1 0 0;
+      margin-bottom: 24px;
+
+      svg {
+        height: 30px;
+      }
+    }
+
+    .app-name {
+      color: var(--foreground, #1C1C1C);
+      font-family: "Frutiger for UBS Web";
+      font-size: var(--appname-fontsize, 16px);
+      font-style: normal;
+      font-weight: 400;
+      line-height: var(--Text-body-lineheight-lg, 24px);
+    }
+
+    .section {
+      color: var(--color-text-inverted, #1c1c1c);
+      font: bold 0.875rem / 1rem Frutiger, Arial, Helvetica, sans-serif;
+      font-size: 14px;
+      line-height: 1.125rem;
+      margin-bottom: 16px;
+    }
+
+    .collection {
+      color: var(--color-text-inverted, #1c1c1c);
+      font: bold 0.875rem / 1rem Frutiger, Arial, Helvetica, sans-serif;
+      font-size: 14px;
+      line-height: 1.125rem;
+      margin-bottom: 16px;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+
+    .tool-bar {
+      display: flex;
+      gap: 12px;
+      height: 50px;
+      align-items: center;
+    }
+
+    .loading-container {
+      position: relative;
+      top: 40%;
+
+      .spinner {
+        display: flex;
+        justify-content: center;
+      }
+
+      .spinner-text {
+        display: flex;
+        justify-content: center;
+
+        >p {
+          font-size: 0.75rem;
+          color: #646464;
+          max-width: 300px;
+          max-width: 300px;
+        }
+      }
+    }
+
+    .configuration {
+      display: flex;
+      border: 1px solid #d7d7d7;
+      border-radius: 4px;
+      padding: 10px;
+      margin-bottom: 25px;
+
+      >.item {
+        flex-grow: 1;
+      }
+    }
+
+    .tokens-section {
+      overflow: auto;
+      scrollbar-width: thin;
+    }
+
+
+
+    .info-notification {
+      display: flex;
+      padding: var(--Generic-padding-padding-vertical30, 12px) var(--generic-tbd-padding-pls-do-not-use-padding-lg, 12px);
+      margin-bottom: 20px;
+      gap: 10px;
+      border-radius: var(--messagebox-radius, 4px);
+      border: 1px solid var(--messagebox-outline-info, #3A5A88);
+      background: var(--messagebox-muted-background-info, #EFF4FB);
+
+      svg {
+        width: 16px;
+        height: 16spx;
+      }
+    }
+
+    .collection-container {
+      padding-top: 20px;
+      padding-bottom: 15px;
+    }
+
+
+
+    .custom-token-value {
+      border: 1px solid #d7d7d7;
+      padding: 0 3px;
+    }
+
+    .token-value {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: var(--controls-size-compact, 16px);
+      height: var(--controls-size-compact, 16px);
+      flex-shrink: 0;
+      border-radius: var(--controls-checkbox-radius, 2px);
+      border: 1px solid var(--controls-outline-hover, #d7d7d7);
+    }
+
+    .content-wrapper {
+      height: 100%;
+    }
+
+    .mr-success {
+      position: relative;
+      top: 40%;
+
+      .info {
+        display: flex;
+        justify-content: center;
+
+        .content {
+          display: flex;
+          align-items: flex-start;
+          gap: 24px;
+          align-self: stretch;
+
+          svg {
+            width: 48px;
+            height: 48px;
+            margin-top: 10px;
+          }
+        }
+      }
+    }
+
+    .main-content {
+      height: calc(100% - 120px);
+      overflow: auto;
+      scrollbar-width: thin;
+    }
+
+    #step1,
+    #step0,
+    #step2 {
+      height: 100%;
+    }
+
+    .icons-containers {
+      display: flex;
+      gap: 30px;
+      flex-wrap: wrap;
+      padding: 30px;
+    }
+
+    .header-svgs {
+      margin-left: 30px;
+    }
+
+    /* END LAYOUT ************************************************* */
+  </style>
+</head>
+
+<body>
+  <div class="plugin-wrapper">
+    <!-- Header section -->
+    <div class="header">
+      <a>
+        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+          width="127px" height="46px" viewBox="0 0 127 46" enable-background="new 0 0 127 46" xml:space="preserve">
+          <style type="text/css">
+            .st0 {
+              fill: #E60000;
+            }
+
+            .st1 {
+              fill: #000000;
+            }
+          </style>
+          <path class="st0"
+            d="m74.3 27.7c0 9.5-5.2 10.7-10.4 10.7-8.9 0-10.8-4.6-10.8-11.1v-18.5h-3.3v-1.8h12.5v1.8h-3.5v17.9c0 6.3 1.6 9.5 6.2 9.5s6.9-2.3 6.9-8.9v-18.5h-3.3v-1.8h8.9v1.8h-3l-0.2 18.9zm8.7 8.5v-27.4h-3.5v-1.8h13.8c5.9 0 8.8 3.3 8.8 7.2 0 4.2-3.8 6.5-7.1 7.2 6.5 0.6 8.3 4.8 8.3 7.9 0 6.3-5.4 8.7-10.6 8.7h-13.4v-1.8h3.7zm13.5-21.6c0-2.9-1.5-5.8-4.8-5.8h-3.6v11.9h3.2c3.6 0 5.2-2.9 5.2-6.1zm1.2 14.8c0-4.1-1.8-6.9-5.9-6.9h-3.5v13.8h2.9c4.3-0.1 6.5-2.7 6.5-6.9zm19.5-21c-3.3 0-5.4 1.9-5.4 5.3 0 3 3.3 4.5 6.5 5.6 1.9 0.7 4.3 1.6 6 3.1 1.8 1.7 2.8 4 2.7 6.9-0.1 5.4-3.9 9.1-10.6 9.1-2.5 0-6.4-0.6-8.7-1.9l-0.3-8.1h2c0.2 5.5 2.7 8.3 7.2 8.3 3.6 0 5.6-2.4 5.6-6.1 0-3.2-2.6-4.5-6.6-5.9-1.3-0.4-3.9-1.4-5.7-3.2-1.6-1.6-2.4-3.7-2.4-5.8 0-6.3 4.5-9.1 10.1-9.1 2.2 0 5.5 0.8 7.5 1.9l0.2 7.1h-2c-0.3-5-2.5-7.2-6.1-7.2z" />
+          <path class="st1"
+            d="m34.1 13.3-0.8 0.7 0.9 2.9-2.6-1.4-0.9 0.7 2.9 1.6-3.1 2.5-0.8-1.1 1.1-0.9-0.8-1-1.1 0.9-0.9-1.2 1.1-0.9-0.8-1.1-5.6 4.7 5.4 4.3 1-1.2c0.7 0 1.2 0.6 1.5 1.2l-1 1.2 0.6 0.5c1.3-1.2 3.1-2 4.9-2 3.8 0 6.7 3.1 6.7 6.9 0 1.2-0.3 2.6-1 3.7l1 0.8c0 0.7-0.7 1.5-1.4 1.7l-1-0.8c-1.3 1.3-3.1 2-4.9 2-3.8 0-6.7-3-6.7-6.8 0-1.2 0.4-2.5 0.9-3.6l-0.7-0.5-1 1.3c-0.7-0.1-1.3-0.6-1.5-1.3l1-1.1-4.5-3.8v6h1.5c0.2 0.3 0.3 0.6 0.3 0.9s-0.1 0.7-0.3 1h-1.5v0.7c3.3 0.6 6.1 3.4 6.1 6.8 0 3.5-2.7 6.3-6.1 6.9v1.2c-0.3 0.2-0.7 0.3-1.1 0.3s-0.9-0.1-1.2-0.3v-1.2c-3.4-0.5-6-3.4-6-6.9 0-3.4 2.6-6.2 6-6.7v-0.8h-1.6c-0.2-0.3-0.3-0.6-0.3-1s0.1-0.7 0.3-1h1.6v-6l-4.6 3.8 1 1.1c-0.2 0.7-0.8 1.2-1.5 1.3l-1-1.3-0.6 0.6c0.6 1.1 1 2.3 1 3.6 0 3.8-3 6.8-6.7 6.8-1.8 0-3.6-0.7-4.9-2l-1 0.8c-0.6-0.2-1.3-1-1.4-1.7l1-0.8c-0.6-1.1-1-2.4-1-3.7 0-3.8 2.9-6.9 6.7-6.9 1.8 0 3.6 0.8 4.9 2l0.6-0.4-1-1.2c0.2-0.6 0.8-1.1 1.5-1.2l1 1.2 5.4-4.3-5.6-4.7-0.8 1.1 1.1 0.9-0.8 1.1-1.1-0.9-0.8 1 0.9 0.7-0.8 1.1-3-2.5 2.8-1.6-0.8-0.7-2.6 1.4 0.8-2.7-0.8-0.7-1 3.1-3.1-2.5 0.8-1 1.1 0.9 0.9-1-1.1-1 0.8-1 1.1 0.8 0.8-1-2.4-1.8c0.2-0.8 0.7-1.4 1.5-1.9l12.7 10.4v-6.9h-1.3v1.3h-1.3v-1.3h-1.3v1.3h-1.3v-3.9l3 1.3v-1.1l-2.8-1.2 2.8-1.1v-1l-3 1.2v-4h1.3v1.4h1.3v-1.4h1.3v1.4h1.3v-3.1c0.4-0.1 0.8-0.2 1.2-0.2s0.8 0.1 1.1 0.2v17.1l12.7-10.4c0.7 0.5 1.2 1.1 1.5 1.9l-2.4 1.9 0.8 1 1.1-0.8 0.8 1-1.1 1 0.8 1 1.1-0.9 0.8 1-3.1 2.5-0.9-3.2zm-25.9 18.8c0 1.1 0.8 1.8 1.8 1.9l-1.6 1.2c-1.1-0.4-2.1-1.7-2.1-2.9 0-0.4 0.1-0.6 0.2-0.9h-0.3c-1.5 0-2.7-1.4-3-2.8l1.7-1.3v0.5c0 0.9 0.9 1.7 1.8 1.7 1 0 1.9-0.8 1.9-1.8 0-1.2-0.9-2-2.1-2-2.2 0-4.4 2.2-4.4 5 0 0.8 0.2 1.6 0.5 2.3l1-0.8c0.7 0.3 1.2 1 1.4 1.8l-1 0.8c1 0.8 2.2 1.2 3.4 1.2 2.6 0 4.6-2.1 4.6-3.9 0-1.1-0.7-2-1.8-2-1.2 0.2-2 1-2 2zm13.6 4c0 1 0.8 1.8 1.8 1.8 0.7 0 1-0.3 1.5-0.7v2.1c-0.5 0.3-1 0.4-1.6 0.4-1.1 0-2-0.3-2.6-1.3-0.6 1-1.6 1.3-2.7 1.3-0.5 0-1.1-0.1-1.6-0.4v-2.1c0.5 0.5 0.8 0.7 1.5 0.7 1 0 1.8-0.8 1.8-1.8s-0.6-1.8-1.7-1.8c-1.9 0-2.7 1.8-2.7 3.5 0 2.4 1.8 4.5 4.1 4.9v-1.2c0.4-0.2 0.8-0.2 1.1-0.2 0.4 0 0.8 0 1.2 0.2v1.2c2.2-0.3 4.1-2.6 4.1-4.9 0-1.7-0.7-3.5-2.7-3.5-0.8-0.1-1.5 0.8-1.5 1.8zm11.4-8.3c0 0.9 1 1.8 1.9 1.8s1.8-0.8 1.8-1.7v-0.5l1.6 1.3c-0.3 1.6-1.7 2.9-3.3 2.8 0.1 0.3 0.1 0.6 0.1 0.9 0 1.2-1 2.5-2.1 2.9l-1.5-1.3c1-0.1 1.8-0.8 1.8-1.9s-0.9-1.8-1.9-1.8c-1.1 0-1.8 0.9-1.8 2 0 1.3 1.6 3.9 4.7 3.9 1.2 0 2.4-0.4 3.3-1.2l-1-0.8c0.2-0.8 0.7-1.5 1.4-1.8l1 0.8c0.4-0.7 0.6-1.5 0.6-2.3 0-2.2-1.7-5-4.4-5-1.2 0-2.2 0.7-2.2 1.9z" />
+        </svg>
+      </a>
+      <div class="app-name">Figma Tokens Sync</div>
+    </div>
+
+    <div class="main-content">
+
+      <!-- ************************************************************************************* -->
+      <!-- PAGE 01  -->
+      <!-- ************************************************************************************* -->
+      <!-- Tokens section -->
+      <div id="step1">
+        <div id="loading_text" class="loading-container">
+          <div class="spinner">
+            <svg width="24" height="24" stroke="#000" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <style>
+                .spinner_V8m1 {
+                  transform-origin: center;
+                  animation: spinner_zKoa 2s linear infinite
+                }
+
+                .spinner_V8m1 circle {
+                  stroke-linecap: round;
+                  animation: spinner_YpZS 1.5s ease-in-out infinite
+                }
+
+                @keyframes spinner_zKoa {
+                  100% {
+                    transform: rotate(360deg)
+                  }
+                }
+
+                @keyframes spinner_YpZS {
+                  0% {
+                    stroke-dasharray: 0 150;
+                    stroke-dashoffset: 0
+                  }
+
+                  47.5% {
+                    stroke-dasharray: 42 150;
+                    stroke-dashoffset: -16
+                  }
+
+                  95%,
+                  100% {
+                    stroke-dasharray: 42 150;
+                    stroke-dashoffset: -59
+                  }
+                }
+              </style>
+              <g class="spinner_V8m1">
+                <circle stroke="#e60000" cx="12" cy="12" r="9.5" fill="none" stroke-width="3"></circle>
+              </g>
+            </svg>
+          </div>
+          <div class="spinner-text">
+            <p>loading ...</p>
+          </div>
+
+        </div>
+        <div class="tokens-section">
+          <!---->
+
+          <div id="tokens_placeholder">
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ************************************************************************************* -->
+      <!-- PAGE 02  -->
+      <!-- ************************************************************************************* -->
+      <div id="step2" style="display: none;">
+
+        <div class="mr-success">
+          <div class="info">
+
+            <div class="content">
+              <div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none">
+                  <circle cx="24" cy="24" r="24" fill="#6F7A1A" />
+                  <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M36.3835 18.4443L21.3941 32.8048L12.5791 23.9077L15.4206 21.0924L21.4672 27.1953L33.6163 15.5559L36.3835 18.4443Z"
+                    fill="white" />
+                </svg>
+              </div>
+              <div>
+
+                <h2>Success</h2>
+
+                <span>A new merge request has been created: </span> <a id="merge_request_link" target="_blank">MR
+                  link</a>
+
+              </div>
+
+            </div>
+
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <!-- Toolbar section -->
+    <div id="mr_tool_bar" class="tool-bar" style="display: none;">
+      <button id="cancel" class="secondary-button">Cancel</button>
+      <button id="send" class="primary-button">Sync to Gitlab</button>
+      <button id="close" class="primary-button" style="display: none;">Close</button>
+    </div>
+  </div>
+
+  <!-- MR Creation Dialog section -->
+  <dialog id="mr_creation_status_dialog" class="dialog">
+    <div id="mr_creation_status_loading_spinner" class="loading-container">
+      <div class="spinner">
+        <svg width="24" height="24" stroke="#000" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <style>
+            .spinner_V8m1 {
+              transform-origin: center;
+              animation: spinner_zKoa 2s linear infinite
+            }
+
+            .spinner_V8m1 circle {
+              stroke-linecap: round;
+              animation: spinner_YpZS 1.5s ease-in-out infinite
+            }
+
+            @keyframes spinner_zKoa {
+              100% {
+                transform: rotate(360deg)
+              }
+            }
+
+            @keyframes spinner_YpZS {
+              0% {
+                stroke-dasharray: 0 150;
+                stroke-dashoffset: 0
+              }
+
+              47.5% {
+                stroke-dasharray: 42 150;
+                stroke-dashoffset: -16
+              }
+
+              95%,
+              100% {
+                stroke-dasharray: 42 150;
+                stroke-dashoffset: -59
+              }
+            }
+          </style>
+          <g class="spinner_V8m1">
+            <circle stroke="#e60000" cx="12" cy="12" r="9.5" fill="none" stroke-width="3"></circle>
+          </g>
+        </svg>
+      </div>
+      <div class="spinner-text">
+        <p>Creating MR ...</p>
+      </div>
+
+    </div>
+    <!--<div id="mr_creation_success_content" class="dialog-content" style="display: none;">
+      <div>
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none">
+          <circle cx="24" cy="24" r="24" fill="#6F7A1A" />
+          <path fill-rule="evenodd" clip-rule="evenodd"
+            d="M36.3835 18.4443L21.3941 32.8048L12.5791 23.9077L15.4206 21.0924L21.4672 27.1953L33.6163 15.5559L36.3835 18.4443Z"
+            fill="white" />
+        </svg>
+      </div>
+      <div>
+
+        <h2>Success</h2>
+        <p>
+          <span>The following MR has been successfully created: </span>
+          <a id="mr_URL" target="_blank">0000</a>
+        </p>
+        <button id="mr_creation_status_close_dialog" onclick="closeMrCreationModel()"
+          class="primary-button">Close</button>
+      </div>
+
+    </div>-->
+    <div id="mr_creation_failure_content" class="dialog-content" style="display: none;">
+      <div>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M24 12C24 18.628 18.628 24 12 24C5.372 24 0 18.628 0 12C0 5.372 5.372 0 12 0C18.628 0 24 5.372 24 12Z"
+            fill="#BD000C" />
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M11.25 14H12.75L13.5 7H10.5L11.25 14ZM11 17H13V15H11V17Z"
+            fill="white" />
+        </svg>
+      </div>
+      <div>
+        <h2>Failure</h2>
+        <p>Something went wrong while creating the MR.</p>
+        <p id="mr_creation_error_message"></p>
+        <button id="mr_creation_status_close_dialog" onclick="closeMrCreationModel()"
+          class="primary-button">Close</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script>
+    // Holds the collections state
+    let collections = {};
+    let collectionList = [];
+    let svgList = [];
+    let mode;
+
+    document.getElementById('cancel').onclick = () => {
+      parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*')
+    }
+
+    document.getElementById('send').onclick = () => {
+      UpdateTranslationModel(null)
+      openTranslationModel();
+
+      // icons mode
+      if (mode === 'icons') {
+        parent.postMessage({
+          pluginMessage: {
+            type: 'create_mr_icons',
+            data: svgList
+          }
+        }, '*')
+      }
+      // tokens mode
+      if (mode === 'tokens') {
+        const selectedCollection = collections.filter(collection => collectionList.includes(collection.name));
+
+        parent.postMessage({
+          pluginMessage: {
+            type: 'create_mr',
+            data: selectedCollection
+          }
+        }, '*')
+      }
+    }
+
+    document.getElementById('close').onclick = () => {
+      parent.postMessage({ pluginMessage: { type: 'close' } }, '*')
+    }
+
+    openTranslationModel = () => {
+      document.getElementById('mr_creation_status_dialog').showModal();
+    }
+
+    closeMrCreationModel = () => {
+      document.getElementById('mr_creation_status_dialog').close();
+    }
+
+    UpdateTranslationModel = (message) => {
+      if (!message) {
+        document.getElementById('mr_creation_status_loading_spinner').style.display = '';
+        //  document.getElementById('mr_creation_success_content').style.display = 'none';
+        document.getElementById('mr_creation_failure_content').style.display = 'none';
+
+      } if (document.getElementById('mr_creation_status_dialog').open) {
+        document.getElementById('mr_creation_status_loading_spinner').style.display = 'none';
+        if (message.code === 'success') {
+          //  document.getElementById('mr_creation_success_content').style.display = ''
+          //  document.getElementById('mr_URL').setAttribute('href', message.data.url);
+          //  document.getElementById('mr_URL').innerHTML = message.data.url;
+          gotoConfirmationPage(message.data.merge_request_link);
+
+
+        } else {
+          document.getElementById('mr_creation_failure_content').style.display = '';
+          document.getElementById('mr_creation_error_message').innerHTML = 'Error: ' + message.data;
+
+        }
+      }
+    }
+
+    const gotoConfirmationPage = (url) => {
+      // close dialog
+      closeMrCreationModel();
+
+      // hide step 01
+      document.getElementById('step1').style.display = 'none';
+      document.getElementById('step2').style.display = '';
+      document.getElementById('merge_request_link').href = url;
+
+
+      document.getElementById('cancel').style.display = 'none';
+      document.getElementById('send').style.display = 'none';
+      document.getElementById('close').style.display = '';
+
+      // show step 2
+
+    }
+
+    renderMarkIcon = () => {
+
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      var path = document.createElementNS("http://www.w3.org/2000/svg", 'path');
+      svg.setAttribute('viewbox', '0 0 9 8');
+      svg.setAttribute('width', '9px');
+      svg.setAttribute('height', '8px');
+      svg.setAttribute('fill', 'none');
+      path.setAttribute('d', 'M8.48278 2.18048L4.14882 6.84782L0.640869 4.15358L1.8591 2.56742L3.92258 4.15224L7.01719 0.81958L8.48278 2.18048Z');
+      path.setAttribute('fill-rule', 'evenodd')
+      path.setAttribute('clip-rule', 'evenodd')
+      path.setAttribute('fill', '#1C1C1C');
+      svg.appendChild(path)
+
+      return svg;
+    }
+
+    renderCloseIcon = () => {
+
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      var path = document.createElementNS("http://www.w3.org/2000/svg", 'path');
+      svg.setAttribute('viewbox', '0 0 8 8');
+      svg.setAttribute('width', '8px');
+      svg.setAttribute('height', '8px');
+      svg.setAttribute('fill', 'none');
+      path.setAttribute('d', 'M3.29294 4L0.110962 0.818023L0.818069 0.110916L4.00005 3.2929L7.18203 0.110916L7.88914 0.818023L4.70716 4L7.88914 7.18198L7.18203 7.88909L4.00005 4.70711L0.818069 7.88909L0.110962 7.18198L3.29294 4Z');
+      path.setAttribute('fill', '#1C1C1C');
+      svg.appendChild(path)
+
+      return svg;
+    }
+
+    buildCheckBox = (collection, index) => {
+      collectionContainer = document.createElement("label");
+      collectionContainer.className = "checkbox-container";
+      collectionContainer.innerHTML = collection.name;
+      collectionInput = document.createElement("input");
+      collectionInput.name = collection.name;
+      collectionInput.value = collection.name;
+      collectionInput.type = 'checkbox';
+      collectionInput.checked = true;
+      collectionInput.id = 'collection_' + collection.name;
+      collectionInput.addEventListener('input', function (evt) {
+        if (evt.target.checked) {
+          collectionList.push(collection.name);
+        } else {
+          collectionList = collectionList.filter(item => item !== collection.name)
+        }
+        updateSyncButton();
+
+      });
+      collectionSpan = document.createElement("span");
+      collectionSpan.className = "checkmark";
+      collectionContainer.appendChild(collectionInput);
+      collectionContainer.appendChild(collectionSpan);
+      return collectionContainer;
+    }
+
+    updateSyncButton = () => {
+      if (collectionList.length === 0) {
+        document.getElementById('send').classList.add('disabled');
+        document.getElementById('send').disabled = true;
+      } else {
+        document.getElementById('send').classList.remove('disabled');
+        document.getElementById('send').disabled = false;
+      }
+    }
+
+    renderSvgs = (svgs) => {
+      const tokensPlaceholder = document.getElementById('tokens_placeholder');
+
+      // 24px container
+      header24Px = document.createElement("h3")
+      header24Px.classList.add('header-svgs')
+      header24Px.innerHTML = 'Icons 24px';
+      tokensPlaceholder.appendChild(header24Px)
+      svgs24pxContainerElmt = document.createElement("div");
+      svgs24pxContainerElmt.classList.add('icons-containers');
+
+      svgs?.filter((svg) => svg.name.endsWith('24px')).forEach((svg, index) => {
+        iconElmt = document.createElement("span");
+        iconElmt.innerHTML = svg.content;
+        iconElmt.title = svg.name;
+        svgs24pxContainerElmt.appendChild(iconElmt)
+      })
+      tokensPlaceholder.appendChild(svgs24pxContainerElmt);
+
+      // 16px container
+      header16Px = document.createElement("h3")
+      header16Px.classList.add('header-svgs')
+      header16Px.innerHTML = 'Icons 16px';
+      tokensPlaceholder.appendChild(header16Px)
+      svgs16pxContainerElmt = document.createElement("div");
+      svgs16pxContainerElmt.classList.add('icons-containers');
+
+
+      svgs?.filter((svg) => svg.name.endsWith('16px')).forEach((svg, index) => {
+        iconElmt = document.createElement("span");
+        iconElmt.innerHTML = svg.content;
+        iconElmt.title = svg.name;
+        svgs16pxContainerElmt.appendChild(iconElmt)
+      })
+      tokensPlaceholder.appendChild(svgs16pxContainerElmt);
+
+      // 12px container
+      header12Px = document.createElement("h3")
+      header12Px.classList.add('header-svgs')
+      header12Px.innerHTML = 'Icons 12px';
+      tokensPlaceholder.appendChild(header12Px)
+      svgs12pxContainerElmt = document.createElement("div");
+      svgs12pxContainerElmt.classList.add('icons-containers');
+
+      svgs?.filter((svg) => svg.name.endsWith('12px')).forEach((svg, index) => {
+        iconElmt = document.createElement("span");
+        iconElmt.innerHTML = svg.content;
+        iconElmt.title = svg.name;
+        svgs12pxContainerElmt.appendChild(iconElmt)
+      })
+      tokensPlaceholder.appendChild(svgs12pxContainerElmt);
+    }
+
+    renderSvg = (svg) => {
+      const tokensPlaceholder = document.getElementById('tokens_placeholder');
+      content = document.createElement("div");
+      content.innerHTML = svg;
+      tokensPlaceholder.appendChild(content);
+    }
+
+
+    renderCollection = (collection) => {
+      // Collection header
+      const tokensPlaceholder = document.getElementById('tokens_placeholder');
+
+      tokensPlaceholder.appendChild(buildCheckBox(collection));
+
+      // Collection tokens table
+      variablesNumber = collection.modes[0].variables.length;
+      modesNumber = collection.modes.length;
+
+      tableElement = document.createElement("table");
+      tableElement.id = 'table_' + collection.name;
+      tableElement.style.display = ''
+      tableElement.hidden = false;
+      tokensPlaceholder.appendChild(tableElement)
+
+      trElement = document.createElement("tr");
+      tableElement.appendChild(trElement)
+
+      thElement = document.createElement("th");
+      thElement.innerHTML = 'Name'
+      trElement.appendChild(thElement)
+
+      for (let index = 0; index < modesNumber; index++) {
+        thElement = document.createElement("th");
+        thElement.innerHTML = collection.modes[index].name
+        trElement.appendChild(thElement)
+
+      }
+
+      for (let i = 0; i < variablesNumber; i++) {
+        trElement = document.createElement("tr");
+        tableElement.appendChild(trElement)
+
+        tdElement = document.createElement("td");
+        tdElement.innerHTML = collection.modes[0].variables[i].name
+        trElement.appendChild(tdElement)
+        for (let j = 0; j < modesNumber; j++) {
+          const element = collection.modes[j].variables[i];
+          tdElement = document.createElement("td");
+          tdElement.appendChild(renderToken(collection.modes[0].variables[i].type, collection.modes[0].variables[i].value, collection.modes[0].variables[i].isAlias))
+          trElement.appendChild(tdElement)
+
+        }
+      }
+    }
+
+    renderToken = (type, value, isAlias) => {
+      token = value + 'AA'
+      if (isAlias) {
+        token = document.createElement('span');
+        token.className = 'custom-token-value';
+
+        token.innerHTML = '#' + value.name;
+      } else {
+        switch (type) {
+          case 'number':
+            token = document.createElement('span');
+            token.className = 'token-value';
+            token.innerHTML = value;
+            break;
+          case 'color':
+            token = document.createElement('span');
+            token.className = 'token-value';
+            token.style.background = value;
+            token.innerHTML = '&nbsp;&nbsp;&nbsp;'
+
+            break;
+          case 'string':
+            token = document.createElement('span');
+            token.className = 'token-value';
+            token.innerHTML = 'T';
+            token.title = value;
+            break;
+          case 'boolean':
+            token = document.createElement('span');
+            token.className = 'token-value'
+
+            value ? token.appendChild(renderMarkIcon()) : token.appendChild(renderCloseIcon())
+            break;
+          default:
+            token = document.createElement('span');
+            token.className = 'token-value';
+
+            token.innerHTML = value;
+        }
+      }
+
+      return token;
+    }
+
+    onmessage = (event) => {
+      if (event.data.pluginMessage.type === 'mode') {
+        mode = event.data.pluginMessage.data;
+      }
+      if (event.data.pluginMessage.type === 'tokens') {
+        document.getElementById('loading_text').style.display = 'none';
+        document.getElementById('mr_tool_bar').style.display = ''
+
+        collections = event.data.pluginMessage?.data;
+        event.data.pluginMessage?.data?.forEach((collection, index) => {
+          collectionList.push(
+            collection.name,
+          );
+          renderCollection(collection)
+        })
+      }
+      if (event.data.pluginMessage.type === 'svgs') {
+        document.getElementById('loading_text').style.display = 'none';
+        document.getElementById('mr_tool_bar').style.display = '';
+
+        svgs = event.data.pluginMessage?.data;
+
+        svgList = event.data.pluginMessage?.data;
+        renderSvgs(event.data.pluginMessage?.data);
+        /*event.data.pluginMessage?.data?.forEach((svg, index) => {
+          svgList.push(
+            svg,
+          );
+          renderSvg(svg)
+        })*/
+      }
+      if (event.data.pluginMessage.type === 'mr_creation') {
+        UpdateTranslationModel(event.data.pluginMessage)
+
+      }
+    }
+  </script>
+
+</body>
+
+</html>
