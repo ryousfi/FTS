@@ -323,17 +323,33 @@
     .custom-token-value {
       border: 1px solid #d7d7d7;
       padding: 0 3px;
+      border: 1px solid #d7d7d7;
+      padding: 0 3px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      width: fit-content;
+      gap: 4px;
     }
 
     .token-value {
       display: flex;
       align-items: center;
-      justify-content: center;
-      width: var(--controls-size-compact, 16px);
-      height: var(--controls-size-compact, 16px);
+      justify-content: start;
+
       flex-shrink: 0;
       border-radius: var(--controls-checkbox-radius, 2px);
-      border: 1px solid var(--controls-outline-hover, #d7d7d7);
+
+      &.color {
+        width: var(--controls-size-compact, 16px);
+        height: var(--controls-size-compact, 16px);
+
+        &.small {
+          width: 12px;
+          height: 12px;
+        }
+      }
+
     }
 
     .content-wrapper {
@@ -384,6 +400,23 @@
 
     .header-svgs {
       margin-left: 30px;
+    }
+
+    .token-name {
+      display: flex;
+      gap: 2px;
+      align-items: center;
+    }
+
+    .center {
+      text-align: center;
+    }
+
+    .color-container {
+      display: flex;
+      justify-content: start;
+      align-items: center;
+      gap: 4px;
     }
 
     /* END LAYOUT ************************************************* */
@@ -720,7 +753,6 @@
     }
 
     renderCloseIcon = () => {
-
       const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
       var path = document.createElementNS("http://www.w3.org/2000/svg", 'path');
       svg.setAttribute('viewbox', '0 0 8 8');
@@ -729,6 +761,66 @@
       svg.setAttribute('fill', 'none');
       path.setAttribute('d', 'M3.29294 4L0.110962 0.818023L0.818069 0.110916L4.00005 3.2929L7.18203 0.110916L7.88914 0.818023L4.70716 4L7.88914 7.18198L7.18203 7.88909L4.00005 4.70711L0.818069 7.88909L0.110962 7.18198L3.29294 4Z');
       path.setAttribute('fill', '#1C1C1C');
+      svg.appendChild(path)
+
+      return svg;
+    }
+
+    renderNumberIcon = () => {
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      var path = document.createElementNS("http://www.w3.org/2000/svg", 'path');
+      svg.setAttribute('viewbox', '0 0 24 24');
+      svg.setAttribute('width', '24px');
+      svg.setAttribute('height', '24px');
+      svg.setAttribute('fill', 'none');
+      path.setAttribute('d', 'M11.498 9.55a.5.5 0 1 0-.995-.1l-.056.55H9.5a.5.5 0 0 0 0 1h.848l-.2 2H9.5a.5.5 0 0 0 0 1h.547l-.045.45a.5.5 0 0 0 .995.1l.056-.55h1.494l-.045.45a.5.5 0 0 0 .995.1l.056-.55h.947a.5.5 0 0 0 0-1h-.848l.2-2h.648a.5.5 0 0 0 0-1h-.547l.045-.45a.5.5 0 1 0-.995-.1l-.056.55h-1.494zM11.153 13l.2-2h1.495l-.2 2z M8 6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2zM7 8a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1z');
+      path.setAttribute('fill', '#1C1C1C');
+      svg.appendChild(path)
+
+      return svg;
+    }
+
+    renderBooleanIcon = () => {
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      var path = document.createElementNS("http://www.w3.org/2000/svg", 'path');
+      svg.setAttribute('viewbox', '0 0 24 24');
+      svg.setAttribute('width', '24px');
+      svg.setAttribute('height', '24px');
+      svg.setAttribute('fill', 'none');
+      path.setAttribute('d', 'M10 8h4a4 4 0 0 1 0 8h-4a4 4 0 0 1 0-8m-5 4a5 5 0 0 1 5-5h4a5 5 0 0 1 0 10h-4a5 5 0 0 1-5-5m5 2a2 2 0 1 1 0-4 2 2 0 0 1 0 4m-3-2a3 3 0 1 1 6 0 3 3 0 0 1-6 0');
+      path.setAttribute('fill', '#1C1C1C');
+      path.setAttribute('fill-rule', 'evenodd');
+      path.setAttribute('clip-rule', 'evenodd');
+      svg.appendChild(path)
+
+      return svg;
+    }
+
+    renderColorIcon = () => {
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      var path = document.createElementNS("http://www.w3.org/2000/svg", 'path');
+      svg.setAttribute('viewbox', '0 0 24 24');
+      svg.setAttribute('width', '24px');
+      svg.setAttribute('height', '24px');
+      svg.setAttribute('fill', 'none');
+      path.setAttribute('d', 'M7.312 6.803a7 7 0 0 1 9.638.248l.28.298a7 7 0 0 1 1.761 4.999l-.029.38c-.155 1.494-1.516 2.274-2.72 2.274H13.5a.5.5 0 0 0-.5.5V16c0 .82-.34 1.603-.92 2.127-.602.542-1.468.8-2.37.49A7.002 7.002 0 0 1 7.05 7.051zm8.931.956a6 6 0 0 0-8.485 0l-.213.223a6 6 0 0 0 2.491 9.69c.979.338 1.849-.456 1.953-1.467l.011-.204v-.5c0-.775.59-1.415 1.346-1.492l.154-.007h2.742l.159-.007c.733-.057 1.391-.513 1.543-1.217l.024-.154a6 6 0 0 0-1.484-4.611zM9 12a1 1 0 1 1-.001 2A1 1 0 0 1 9 12m6-2a1 1 0 1 1-.002 2.002A1 1 0 0 1 15 10m-5-1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m3-1a1 1 0 1 1 0 2.002 1 1 0 0 1 0-2.001');
+      path.setAttribute('fill', '#1C1C1C');
+      svg.appendChild(path)
+
+      return svg;
+    }
+
+    renderTextIcon = () => {
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      var path = document.createElementNS("http://www.w3.org/2000/svg", 'path');
+      svg.setAttribute('viewbox', '0 0 24 24');
+      svg.setAttribute('width', '24px');
+      svg.setAttribute('height', '24px');
+      svg.setAttribute('fill', 'none');
+      path.setAttribute('d', 'M8 7h8a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1M6 8a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2zm3.5 1a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 1 0V10h1.5v4H11a.5.5 0 0 0 0 1h2a.5.5 0 0 0 0-1h-.5v-4H14v.5a.5.5 0 0 0 1 0v-1a.5.5 0 0 0-.5-.5z');
+      path.setAttribute('fill', '#1C1C1C');
+      path.setAttribute('fill-rule', 'evenodd');
+      path.setAttribute('clip-rule', 'evenodd');
       svg.appendChild(path)
 
       return svg;
@@ -851,7 +943,7 @@
       tableElement.appendChild(trElement)
 
       thElement = document.createElement("th");
-      thElement.innerHTML = 'Name'
+      thElement.innerHTML = 'Token'
       trElement.appendChild(thElement)
 
       for (let index = 0; index < modesNumber; index++) {
@@ -866,11 +958,22 @@
         tableElement.appendChild(trElement)
 
         tdElement = document.createElement("td");
-        tdElement.innerHTML = collection.modes[0].variables[i].name
+
+        // render icon acording to type
+        tokenNameElement = document.createElement("div");
+        tokenNameElement.classList.add('token-name')
+        tokenNameElement.appendChild(renderNameIcon(collection.modes[0].variables[i].type))
+        nameElement = document.createElement("span");
+        nameElement.innerHTML = collection.modes[0].variables[i].name
+        tokenNameElement.appendChild(nameElement)
+        tdElement.appendChild(tokenNameElement)
         trElement.appendChild(tdElement)
         for (let j = 0; j < modesNumber; j++) {
           const element = collection.modes[j].variables[i];
           tdElement = document.createElement("td");
+          if (collection.modes[0].variables[i].isAlias) {
+            console.table(collection.modes[0].variables[i])
+          }
           tdElement.appendChild(renderToken(collection.modes[0].variables[i].type, collection.modes[0].variables[i].value, collection.modes[0].variables[i].isAlias))
           trElement.appendChild(tdElement)
 
@@ -878,13 +981,66 @@
       }
     }
 
-    renderToken = (type, value, isAlias) => {
-      token = value + 'AA'
-      if (isAlias) {
-        token = document.createElement('span');
-        token.className = 'custom-token-value';
+    renderNameIcon = (type) => {
+      let icon;
+      switch (type) {
+        case 'boolean':
+          icon = renderBooleanIcon();
+          break;
+        case 'string':
+          icon = renderTextIcon();
+          break;
+        case 'color':
+          icon = renderColorIcon();
+          break;
+        case 'number':
+          icon = renderNumberIcon();
+          break;
+        default:
+          console.log(`Unknown type: ${type}.`);
+      }
+      return icon;
+    }
 
-        token.innerHTML = '#' + value.name;
+    renderAliasIcon = (type) => {
+      let icon;
+      switch (type) {
+        case 'boolean':
+          icon = renderBooleanIcon();
+          break;
+        case 'string':
+          icon = renderTextIcon();
+          break;
+        case 'color':
+          icon = document.createElement('span');
+          icon.className = 'token-value color small';
+
+          icon.style.background = 'red'; // calculate color
+          break;
+        case 'number':
+          icon = renderNumberIcon();
+          break;
+        default:
+          console.log(`Unknown type: ${type}.`);
+      }
+      return icon;
+    }
+
+    renderToken = (type, value, isAlias) => {
+      let token;
+      if (isAlias) {
+        console.log(value);
+        token = document.createElement('div');
+        token.classList.add('center');
+        content = document.createElement('div');
+        content.className = 'custom-token-value';
+
+        content.appendChild(renderAliasIcon(type))
+        token.appendChild(content);
+
+        nameElmt = document.createElement('span');
+        nameElmt.innerHTML = '#' + value.name;
+        content.appendChild(nameElmt);
       } else {
         switch (type) {
           case 'number':
@@ -893,23 +1049,29 @@
             token.innerHTML = value;
             break;
           case 'color':
-            token = document.createElement('span');
-            token.className = 'token-value';
-            token.style.background = value;
-            token.innerHTML = '&nbsp;&nbsp;&nbsp;'
+
+            token = document.createElement('div');
+            token.classList.add('color-container');
+            colorElmt = document.createElement('span');
+            colorElmt.className = 'token-value color';
+            colorElmt.style.background = value;
+
+            valueElmt = document.createElement('span');
+            valueElmt.innerHTML = value;
+            token.appendChild(colorElmt);
+            token.appendChild(valueElmt);
 
             break;
           case 'string':
             token = document.createElement('span');
             token.className = 'token-value';
-            token.innerHTML = 'T';
-            token.title = value;
+            token.innerHTML = value;
             break;
           case 'boolean':
             token = document.createElement('span');
             token.className = 'token-value'
 
-            value ? token.appendChild(renderMarkIcon()) : token.appendChild(renderCloseIcon())
+            value ? token.innerHTML = 'True' : token.innerHTML = 'False';
             break;
           default:
             token = document.createElement('span');

@@ -6,7 +6,7 @@ const ICONS_SYNC_ENDPOINT = URL_BASE + '/update-uwr-icons/';
 // Show the initial UI without text messages
 console.log('FTS - Init the plugin UI ...');
 figma.showUI(__html__, {
-  width: 600,
+  width: 1020,
   height: 800
 });
 
