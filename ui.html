@@ -1028,12 +1028,6 @@
 
         svgList = event.data.pluginMessage?.data;
         renderSvgs(event.data.pluginMessage?.data);
-        /*event.data.pluginMessage?.data?.forEach((svg, index) => {
-          svgList.push(
-            svg,
-          );
-          renderSvg(svg)
-        })*/
       }
       if (event.data.pluginMessage.type === 'mr_creation') {
         UpdateTranslationModel(event.data.pluginMessage)
