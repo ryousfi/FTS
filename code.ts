@@ -1,8 +1,7 @@
-const URL_BASE = 'https://my-app.cawbh.whs-at49357-dev-cx-b2e-nch.azpriv-cloud.ubs.net/api';
-//const URL_BASE = 'https://10.200.199.80:8080';
-// const DETECT_LANGUAGE_ENDPOINT = URL_BASE + '/api/detect-language/';
+const URL_BASE = 'https://my-app.cawbh.whs-at49357-dev-cx-b2e-nch.azpriv-cloud.ubs.net/api/';
 const SYNC_ENDPOINT = URL_BASE + '/update-uwr/';
 const ICONS_SYNC_ENDPOINT = URL_BASE + '/update-uwr-icons/';
+
 // Show the initial UI without text messages
 console.log('FTS - Init the plugin UI ...');
 figma.showUI(__html__, {
@@ -17,7 +16,7 @@ console.log('FTS - Extraction mode detected: ' + mode);
 figma.ui.postMessage({ type: 'mode', data: mode });
 
 
-if(mode === 'icons') {
+if (mode === 'icons') {
   console.log('FTS - Extracting svgs ...');
   (async () => {
     await figma.loadAllPagesAsync();
@@ -47,7 +46,7 @@ if(mode === 'icons') {
   
   })()
   
-} else if(mode === 'tokens') {
+} else if (mode === 'tokens') {
 // Extract collections and variables and send a notification to figma UI
 console.log('FTS - Extracting collections and variables ...');
 (async () => {
@@ -55,7 +54,7 @@ console.log('FTS - Extracting collections and variables ...');
   const localCollections = await figma.variables.getLocalVariableCollectionsAsync();
 
   for (const collection of localCollections) {
-    collections.push((await processCollection(collection)));
+    collections.push(await processCollection(collection));
   }
 
   // Render text messages
@@ -112,7 +111,9 @@ async function getIconContent(nodeId: string) {
 }
 
 
-// on messages from figma UI
+/**
+ * Handle messages from the Figma UI
+ */
 figma.ui.onmessage = (msg: { type: string, data: any }) => {
   if (msg.type === 'create_mr') {
     console.log('FTS - Sending the MR creation request to GENE ...');
@@ -204,7 +205,9 @@ figma.ui.onmessage = (msg: { type: string, data: any }) => {
   }
 };
 
-// Fetch with error handling
+/**
+ * Fetch with error handling
+ */
 async function fetchWithErrorHandling(url: any, options = {}) {
   try {
     const response = await fetch(url, options);
@@ -219,6 +222,9 @@ async function fetchWithErrorHandling(url: any, options = {}) {
 }
 
 
+/**
+ * Process a Figma variable collection
+ */
 async function processCollection({ name, modes, variableIds }) {
   
   const collectionDate = {
@@ -316,6 +322,9 @@ async function processCollection({ name, modes, variableIds }) {
   return collectionDate;
 }
 
+/**
+ * Convert Figma RGB color to hex or rgba string
+ */
 function rgbToHex({ r, g, b, a }) {
   if (a !== 1) {
     return `rgba(${[r, g, b]
@@ -329,4 +338,4 @@ function rgbToHex({ r, g, b, a }) {
 
   const hex = [toHex(r), toHex(g), toHex(b)].join("");
   return `#${hex}`;
-}                           
+}
