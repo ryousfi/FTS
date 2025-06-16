@@ -1,8 +1,9 @@
+<!DOCTYPE html>
 <html>
 
 <head>
   <style>
-    /* START CHECKBOX ************************************************* */
+    /* CHECKBOX */
     .checkbox-container {
       display: block;
       position: relative;
@@ -10,9 +11,6 @@
       margin-bottom: 12px;
       cursor: pointer;
       font-size: var(--controls-fontsize-label-compact, 16px);
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
       user-select: none;
       font-family: "Frutiger for UBS Web";
       font-style: normal;
@@ -39,11 +37,11 @@
       border: #1C1C1C solid 1px;
     }
 
-    .checkbox-container:hover input ~ .checkmark {
+    .checkbox-container:hover input~.checkmark {
       background-color: white;
     }
 
-    .checkbox-container input:checked ~ .checkmark {
+    .checkbox-container input:checked~.checkmark {
       background-color: var(--controls-checkbox-background-selected, #1C1C1C);
     }
 
@@ -53,7 +51,7 @@
       display: none;
     }
 
-    .checkbox-container input:checked ~ .checkmark:after {
+    .checkbox-container input:checked~.checkmark:after {
       display: block;
     }
 
@@ -64,13 +62,10 @@
       height: 8px;
       border: solid white;
       border-width: 0 3px 3px 0;
-      -webkit-transform: rotate(45deg);
-      -ms-transform: rotate(45deg);
       transform: rotate(45deg);
     }
-    /* END CHECKBOX ************************************************* */
 
-    /* BEGIN ANCHOR  ************************************************* */
+    /* ANCHOR */
     a {
       color: var(--link-text, #DA0000);
       cursor: pointer;
@@ -81,12 +76,12 @@
       line-height: var(--Text-body-lineheight-lg, 24px);
       text-decoration-line: unset;
     }
+
     a:hover {
       text-decoration-line: underline;
     }
-    /* END ANCHOR ************************************************* */
 
-    /* BEGIN BUTTON ************************************************* */
+    /* BUTTON */
     .primary-button {
       cursor: pointer;
       height: var(--button-height, 32px);
@@ -118,7 +113,7 @@
       justify-content: center;
       align-items: center;
       border-radius: 4px;
-      background: var(--button-primary-background, #fff);
+      background: #fff;
       border: 1px solid var(--button-secondary-outline, #CCCABC);
       gap: var(--button-gap-icon, 8px);
       color: var(--generic-text-primary, #1C1C1C);
@@ -130,9 +125,7 @@
       line-height: var(--button-lineheight-text, 12px);
     }
 
-    /* END BUTTON ************************************************* */
-
-    /* BEGIN TABLE ************************************************* */
+    /* TABLE */
     table {
       border-collapse: collapse;
       width: calc(100% - 12px);
@@ -140,17 +133,18 @@
       color: #1c1c1c;
       font-size: 12px;
     }
+
     table tr {
       border-bottom: 1px solid #d7d7d7;
       line-height: 32px;
     }
+
     table th {
       font-weight: 500;
       text-align: left;
     }
-    /* END TABLE ************************************************* */
 
-    /* BEGIN DIALOG ************************************************* */
+    /* DIALOG */
     .dialog {
       border-radius: var(--overlay-message-radius, 8px);
       background: var(--overlay-background, #FFF);
@@ -165,14 +159,14 @@
       gap: 24px;
       align-self: stretch;
     }
+
     .dialog-content svg {
       width: 48px;
       height: 48px;
       margin-top: 10px;
     }
-    /* END DIALOG ************************************************* */
 
-    /* BEGIN LAYOUT ************************************************* */
+    /* LAYOUT */
     .header {
       display: flex;
       padding: var(--header-header-margin-vertical, 8px) 0px;
@@ -181,6 +175,7 @@
       flex: 1 0 0;
       margin-bottom: 24px;
     }
+
     .header svg {
       height: 30px;
     }
@@ -194,14 +189,7 @@
       line-height: var(--Text-body-lineheight-lg, 24px);
     }
 
-    .section {
-      color: var(--color-text-inverted, #1c1c1c);
-      font: bold 0.875rem / 1rem Frutiger, Arial, Helvetica, sans-serif;
-      font-size: 14px;
-      line-height: 1.125rem;
-      margin-bottom: 16px;
-    }
-
+    .section,
     .collection {
       color: var(--color-text-inverted, #1c1c1c);
       font: bold 0.875rem / 1rem Frutiger, Arial, Helvetica, sans-serif;
@@ -209,6 +197,7 @@
       line-height: 1.125rem;
       margin-bottom: 16px;
     }
+
     .collection:hover {
       cursor: pointer;
     }
@@ -224,15 +213,18 @@
       position: relative;
       top: 40%;
     }
+
     .loading-container .spinner {
       display: flex;
       justify-content: center;
     }
+
     .loading-container .spinner-text {
       display: flex;
       justify-content: center;
     }
-    .loading-container .spinner-text > p {
+
+    .loading-container .spinner-text>p {
       font-size: 0.75rem;
       color: #646464;
       max-width: 300px;
@@ -245,7 +237,8 @@
       padding: 10px;
       margin-bottom: 25px;
     }
-    .configuration > .item {
+
+    .configuration>div {
       flex-grow: 1;
     }
 
@@ -263,6 +256,7 @@
       border: 1px solid var(--messagebox-outline-info, #3A5A88);
       background: var(--messagebox-muted-background-info, #EFF4FB);
     }
+
     .info-notification svg {
       width: 16px;
       height: 16px;
@@ -290,10 +284,12 @@
       flex-shrink: 0;
       border-radius: var(--controls-checkbox-radius, 2px);
     }
+
     .token-value.color {
       width: var(--controls-size-compact, 16px);
       height: var(--controls-size-compact, 16px);
     }
+
     .token-value.color.small {
       width: 12px;
       height: 12px;
@@ -307,16 +303,19 @@
       position: relative;
       top: 40%;
     }
+
     .mr-success .info {
       display: flex;
       justify-content: center;
     }
+
     .mr-success .info .content {
       display: flex;
       align-items: flex-start;
       gap: 24px;
       align-self: stretch;
     }
+
     .mr-success .info .content svg {
       width: 48px;
       height: 48px;
@@ -362,7 +361,6 @@
       align-items: center;
       gap: 4px;
     }
-    /* END LAYOUT ************************************************* */
   </style>
 </head>
 
@@ -547,27 +545,6 @@
       </div>
 
     </div>
-    <!--<div id="mr_creation_success_content" class="dialog-content" style="display: none;">
-      <div>
-        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none">
-          <circle cx="24" cy="24" r="24" fill="#6F7A1A" />
-          <path fill-rule="evenodd" clip-rule="evenodd"
-            d="M36.3835 18.4443L21.3941 32.8048L12.5791 23.9077L15.4206 21.0924L21.4672 27.1953L33.6163 15.5559L36.3835 18.4443Z"
-            fill="white" />
-        </svg>
-      </div>
-      <div>
-
-        <h2>Success</h2>
-        <p>
-          <span>The following MR has been successfully created: </span>
-          <a id="mr_URL" target="_blank">0000</a>
-        </p>
-        <button id="mr_creation_status_close_dialog" onclick="closeMrCreationModel()"
-          class="primary-button">Close</button>
-      </div>
-
-    </div>-->
     <div id="mr_creation_failure_content" class="dialog-content" style="display: none;">
       <div>
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
