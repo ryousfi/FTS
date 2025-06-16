@@ -9,14 +9,12 @@
       padding-left: 22px;
       margin-bottom: 12px;
       cursor: pointer;
-      font-size: 22px;
+      font-size: var(--controls-fontsize-label-compact, 16px);
       -webkit-user-select: none;
       -moz-user-select: none;
       -ms-user-select: none;
       user-select: none;
-
       font-family: "Frutiger for UBS Web";
-      font-size: var(--controls-fontsize-label-compact, 16px);
       font-style: normal;
       font-weight: 400;
       line-height: var(--controls-lineheight-label-compact, 18px);
@@ -28,8 +26,6 @@
       cursor: pointer;
       height: 0;
       width: 0;
-
-
     }
 
     .checkmark {
@@ -43,11 +39,11 @@
       border: #1C1C1C solid 1px;
     }
 
-    .checkbox-container:hover input~.checkmark {
+    .checkbox-container:hover input ~ .checkmark {
       background-color: white;
     }
 
-    .checkbox-container input:checked~.checkmark {
+    .checkbox-container input:checked ~ .checkmark {
       background-color: var(--controls-checkbox-background-selected, #1C1C1C);
     }
 
@@ -57,7 +53,7 @@
       display: none;
     }
 
-    .checkbox-container input:checked~.checkmark:after {
+    .checkbox-container input:checked ~ .checkmark:after {
       display: block;
     }
 
@@ -72,9 +68,9 @@
       -ms-transform: rotate(45deg);
       transform: rotate(45deg);
     }
-
     /* END CHECKBOX ************************************************* */
-    /* begin ANCHOR  ************************************************* */
+
+    /* BEGIN ANCHOR  ************************************************* */
     a {
       color: var(--link-text, #DA0000);
       cursor: pointer;
@@ -84,14 +80,12 @@
       font-weight: 400;
       line-height: var(--Text-body-lineheight-lg, 24px);
       text-decoration-line: unset;
-
-      &:hover {
-        text-decoration-line: underline;
-      }
-
     }
-
+    a:hover {
+      text-decoration-line: underline;
+    }
     /* END ANCHOR ************************************************* */
+
     /* BEGIN BUTTON ************************************************* */
     .primary-button {
       cursor: pointer;
@@ -103,16 +97,13 @@
       background: var(--button-primary-background, #404040);
       border: none;
       gap: var(--button-gap-icon, 8px);
-      /* Button/label-compact */
       color: var(--generic-text-alternate, #FFF);
       font-feature-settings: 'liga' off, 'clig' off;
-      /* Button/label */
       font-family: var(--Text-fontfamily, "Frutiger for UBS Web");
       font-size: var(--button-fontsize-text, 14px);
       font-style: normal;
       font-weight: 500;
       line-height: var(--button-lineheight-text, 12px);
-      /* 142.857% */
     }
 
     .primary-button.disabled {
@@ -122,38 +113,21 @@
 
     .secondary-button {
       cursor: pointer;
-
       height: var(--button-height, 32px);
       padding: var(--button-padding-vertical, 10px) var(--button-padding-horizontal, 12px);
       justify-content: center;
       align-items: center;
       border-radius: 4px;
-      background: var(--button-primary-background, #404040);
-      border: none;
+      background: var(--button-primary-background, #fff);
+      border: 1px solid var(--button-secondary-outline, #CCCABC);
       gap: var(--button-gap-icon, 8px);
-      /* Button/label-compact */
-      color: var(--generic-text-alternate, #FFF);
+      color: var(--generic-text-primary, #1C1C1C);
       font-feature-settings: 'liga' off, 'clig' off;
-      /* Button/label */
       font-family: var(--Text-fontfamily, "Frutiger for UBS Web");
       font-size: var(--button-fontsize-text, 14px);
       font-style: normal;
       font-weight: 500;
       line-height: var(--button-lineheight-text, 12px);
-      /* 142.857% */
-
-      color: var(--generic-text-primary, #1C1C1C);
-      border: 1px solid var(--button-secondary-outline, #CCCABC);
-      background: var(--button-primary-background, #fff);
-
-    }
-
-    input[type="checkbox"] {
-
-      >label {
-        color: red;
-      }
-
     }
 
     /* END BUTTON ************************************************* */
@@ -161,24 +135,19 @@
     /* BEGIN TABLE ************************************************* */
     table {
       border-collapse: collapse;
-
       width: calc(100% - 12px);
       margin-bottom: 20px;
       color: #1c1c1c;
       font-size: 12px;
-
-      tr {
-        border-bottom: 1px solid #d7d7d7;
-        line-height: 32px;
-
-        th {
-          font-weight: 500;
-          text-align: left;
-
-        }
-      }
     }
-
+    table tr {
+      border-bottom: 1px solid #d7d7d7;
+      line-height: 32px;
+    }
+    table th {
+      font-weight: 500;
+      text-align: left;
+    }
     /* END TABLE ************************************************* */
 
     /* BEGIN DIALOG ************************************************* */
@@ -188,8 +157,6 @@
       box-shadow: 0px 0px 16px 0px rgba(0, 0, 0, 0.24);
       padding: var(--overlay-padding-vertical, 32px) var(--overlay-message-padding-horizontal, 48px);
       border: none;
-
-
     }
 
     .dialog-content {
@@ -197,14 +164,12 @@
       align-items: flex-start;
       gap: 24px;
       align-self: stretch;
-
-      svg {
-        width: 48px;
-        height: 48px;
-        margin-top: 10px;
-      }
     }
-
+    .dialog-content svg {
+      width: 48px;
+      height: 48px;
+      margin-top: 10px;
+    }
     /* END DIALOG ************************************************* */
 
     /* BEGIN LAYOUT ************************************************* */
@@ -215,10 +180,9 @@
       gap: var(--header-header-margin-hotizontal, 12px);
       flex: 1 0 0;
       margin-bottom: 24px;
-
-      svg {
-        height: 30px;
-      }
+    }
+    .header svg {
+      height: 30px;
     }
 
     .app-name {
@@ -244,10 +208,9 @@
       font-size: 14px;
       line-height: 1.125rem;
       margin-bottom: 16px;
-
-      &:hover {
-        cursor: pointer;
-      }
+    }
+    .collection:hover {
+      cursor: pointer;
     }
 
     .tool-bar {
@@ -260,23 +223,19 @@
     .loading-container {
       position: relative;
       top: 40%;
-
-      .spinner {
-        display: flex;
-        justify-content: center;
-      }
-
-      .spinner-text {
-        display: flex;
-        justify-content: center;
-
-        >p {
-          font-size: 0.75rem;
-          color: #646464;
-          max-width: 300px;
-          max-width: 300px;
-        }
-      }
+    }
+    .loading-container .spinner {
+      display: flex;
+      justify-content: center;
+    }
+    .loading-container .spinner-text {
+      display: flex;
+      justify-content: center;
+    }
+    .loading-container .spinner-text > p {
+      font-size: 0.75rem;
+      color: #646464;
+      max-width: 300px;
     }
 
     .configuration {
@@ -285,18 +244,15 @@
       border-radius: 4px;
       padding: 10px;
       margin-bottom: 25px;
-
-      >.item {
-        flex-grow: 1;
-      }
+    }
+    .configuration > .item {
+      flex-grow: 1;
     }
 
     .tokens-section {
       overflow: auto;
       scrollbar-width: thin;
     }
-
-
 
     .info-notification {
       display: flex;
@@ -306,11 +262,10 @@
       border-radius: var(--messagebox-radius, 4px);
       border: 1px solid var(--messagebox-outline-info, #3A5A88);
       background: var(--messagebox-muted-background-info, #EFF4FB);
-
-      svg {
-        width: 16px;
-        height: 16spx;
-      }
+    }
+    .info-notification svg {
+      width: 16px;
+      height: 16px;
     }
 
     .collection-container {
@@ -318,11 +273,7 @@
       padding-bottom: 15px;
     }
 
-
-
     .custom-token-value {
-      border: 1px solid #d7d7d7;
-      padding: 0 3px;
       border: 1px solid #d7d7d7;
       padding: 0 3px;
       height: 18px;
@@ -336,20 +287,16 @@
       display: flex;
       align-items: center;
       justify-content: start;
-
       flex-shrink: 0;
       border-radius: var(--controls-checkbox-radius, 2px);
-
-      &.color {
-        width: var(--controls-size-compact, 16px);
-        height: var(--controls-size-compact, 16px);
-
-        &.small {
-          width: 12px;
-          height: 12px;
-        }
-      }
-
+    }
+    .token-value.color {
+      width: var(--controls-size-compact, 16px);
+      height: var(--controls-size-compact, 16px);
+    }
+    .token-value.color.small {
+      width: 12px;
+      height: 12px;
     }
 
     .content-wrapper {
@@ -359,24 +306,21 @@
     .mr-success {
       position: relative;
       top: 40%;
-
-      .info {
-        display: flex;
-        justify-content: center;
-
-        .content {
-          display: flex;
-          align-items: flex-start;
-          gap: 24px;
-          align-self: stretch;
-
-          svg {
-            width: 48px;
-            height: 48px;
-            margin-top: 10px;
-          }
-        }
-      }
+    }
+    .mr-success .info {
+      display: flex;
+      justify-content: center;
+    }
+    .mr-success .info .content {
+      display: flex;
+      align-items: flex-start;
+      gap: 24px;
+      align-self: stretch;
+    }
+    .mr-success .info .content svg {
+      width: 48px;
+      height: 48px;
+      margin-top: 10px;
     }
 
     .main-content {
@@ -418,7 +362,6 @@
       align-items: center;
       gap: 4px;
     }
-
     /* END LAYOUT ************************************************* */
   </style>
 </head>
@@ -1012,10 +955,10 @@
           icon = renderTextIcon();
           break;
         case 'color':
-          icon = document.createElement('span');
-          icon.className = 'token-value color small';
-
-          icon.style.background = 'red'; // calculate color
+          // icon = document.createElement('span');
+          // icon.className = 'token-value color small';
+          // icon.style.background = 'red'; // calculate color
+          icon = renderColorIcon();
           break;
         case 'number':
           icon = renderNumberIcon();
