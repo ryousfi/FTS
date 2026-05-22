@@ -23,7 +23,6 @@ if (figma.root.name.includes('UBS Icon Library')) {
   mode = 'tokens';
 
   figma.root.name.includes('UDS Styles & Variables') ? filePath = 'src/assets/tokens/uds-variables.json' : filePath = 'figma-variables/ubs-colors.json';
-  console
 } else {
   console.log('FTS - Modes sync mode detected');
   mode = 'modes';
@@ -67,6 +66,7 @@ if (mode === 'icons') {
   console.log('FTS - Extracting collections and variables ...');
   (async () => {
     const collections = [];
+    const processedCollectionNames = new Set<string>();
     const localCollections = await figma.variables.getLocalVariableCollectionsAsync();
     for (const collection of localCollections) {
       console.log('FTS - Processing collection: ' + collection.name);
@@ -76,6 +76,11 @@ if (mode === 'icons') {
         console.log('FTS - Skipping collection: ' + collection.name);
         continue;
       }
+      if (processedCollectionNames.has(collection.name)) {
+        console.log('FTS - Duplicate collection skipped: ' + collection.name);
+        continue;
+      }
+      processedCollectionNames.add(collection.name);
       collections.push(await processCollection(collection));
     }
 
@@ -369,6 +374,10 @@ async function processCollection({ name, modes, variableIds }) {
     modes: [],
   }
 
+  // Cache variable collection lookups to avoid redundant async calls when
+  // remote/published collections use a different modeId format than valuesByMode keys.
+  const varCollectionCache = new Map<string, any>();
+
   for (const mode of modes) {
 
     console.log('Mode: ' + mode.name)
@@ -379,28 +388,37 @@ async function processCollection({ name, modes, variableIds }) {
     for (const variableId of variableIds) {
       let variableData = {
       }
-      console.log('Variable: ' + variableId)
 
       let isAlias = false;
 
-      const { name, resolvedType, valuesByMode } =
+      const { name, resolvedType, valuesByMode, variableCollectionId } =
         await figma.variables.getVariableByIdAsync(variableId);
 
-      // TODO to be checked
+      // For remote/published library collections the collection's modeId
+      // format (e.g. "VariableCollectionId:x/y") differs from the short
+      // numeric keys in valuesByMode. Fall back to matching by mode name.
+      let modeIdToUse = mode.modeId;
+      if (valuesByMode[modeIdToUse] === undefined) {
+        if (!varCollectionCache.has(variableCollectionId)) {
+          varCollectionCache.set(
+            variableCollectionId,
+            await figma.variables.getVariableCollectionByIdAsync(variableCollectionId)
+          );
+        }
+        const varCol = varCollectionCache.get(variableCollectionId);
+        const match = varCol?.modes.find((m: any) => m.name === mode.name);
+        if (match) modeIdToUse = match.modeId;
+      }
 
-      console.log('valuesByMode: ' +  JSON.stringify(valuesByMode))
-      const value: any = valuesByMode[mode.modeId];
+      const value: any = valuesByMode[modeIdToUse];
       // if (value !== undefined && ["COLOR", "FLOAT"].includes(resolvedType)) {
-      console.log('Variable name: ' + name)
 
       // TODO check this part
       let obj: any = {};
-      console.log('1')
       name.split("/").forEach((groupName) => {
         obj[groupName] = obj[groupName] || {};
         obj = obj[groupName];
       });
-      console.log('2')
       // TODO change type to string, color, number and boolean
       //   obj.$type = resolvedType === "COLOR" ? "color" : "number";
       let convertedType = '';
@@ -427,14 +445,12 @@ async function processCollection({ name, modes, variableIds }) {
         default:
           break;
       }
-      console.log('value: ' + value)
       // Guard: a variable may not have a value defined for every mode
       // (e.g. if the mode was added after the variable was created).
       if (value === undefined || value === null) {
         console.log(`WARN - No value defined for mode "${mode.name}" (${mode.modeId}) in variable "${name}" — skipping`);
         continue;
       }
-      console.log('type: ' + value.type)
       if (value.type === "VARIABLE_ALIAS") {
         isAlias = true;
         const currentVar = await figma.variables.getVariableByIdAsync(
@@ -454,7 +470,6 @@ async function processCollection({ name, modes, variableIds }) {
         obj.$value = resolvedType === "COLOR" ? rgbToHex(value) : value;
       }
 
-      console.log('4')
 
       variableData = {
         name,
@@ -464,7 +479,6 @@ async function processCollection({ name, modes, variableIds }) {
       }
 
 
-      console.log('pushing')
       modeData.variables.push(variableData)
       //  }
     }
