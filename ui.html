@@ -3,66 +3,32 @@
 
 <head>
   <style>
-    /* CHECKBOX */
-    .checkbox-container {
-      display: block;
-      position: relative;
-      padding-left: 22px;
-      margin-bottom: 12px;
+    /* COLLECTION COLLAPSIBLE */
+    .collection-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
       cursor: pointer;
-      font-size: 16px;
       user-select: none;
-      font-family: "Frutiger for UBS Web";
-      font-style: normal;
-      font-weight: 400;
-      line-height: 18px;
+      padding: 4px 0;
+      margin-bottom: 8px;
+      color: #1c1c1c;
+      font: bold 0.875rem / 1rem Frutiger, Arial, Helvetica, sans-serif;
+      font-size: 14px;
+      line-height: 1.125rem;
     }
 
-    .checkbox-container input {
-      position: absolute;
-      opacity: 0;
-      cursor: pointer;
-      height: 0;
-      width: 0;
+    .collection-header:hover {
+      opacity: 0.7;
     }
 
-    .checkmark {
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 16px;
-      width: 16px;
-      border-radius: 2px;
-      background-color: white;
-      border: #1C1C1C solid 1px;
+    .chevron-icon {
+      flex-shrink: 0;
+      transition: transform 0.2s ease;
     }
 
-    .checkbox-container:hover input~.checkmark {
-      background-color: white;
-    }
-
-    .checkbox-container input:checked~.checkmark {
-      background-color: #1C1C1C;
-    }
-
-    .checkmark:after {
-      content: "";
-      position: absolute;
-      display: none;
-    }
-
-    .checkbox-container input:checked~.checkmark:after {
-      display: block;
-    }
-
-    .checkbox-container .checkmark:after {
-      left: 5px;
-      top: 2px;
-      width: 3px;
-      height: 8px;
-      border: solid white;
-      border-width: 0 3px 3px 0;
-      transform: rotate(45deg);
+    .chevron-icon.expanded {
+      transform: rotate(180deg);
     }
 
     /* ANCHOR */
@@ -491,6 +457,7 @@
     <div id="mr_tool_bar" class="tool-bar" style="display: none;">
       <button id="cancel" class="secondary-button">Cancel</button>
       <button id="send" class="primary-button">Sync to Gitlab</button>
+      <button id="apply_mode" class="primary-button disabled" style="display: none;">Apply selected mode</button>
       <button id="close" class="primary-button" style="display: none;">Close</button>
     </div>
   </div>
@@ -571,10 +538,23 @@
     let collectionList = [];
     let svgList = [];
     let mode;
+    let selectedMode;
+    let defaultMode;
 
     document.getElementById('cancel').onclick = () => {
       parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*')
     }
+
+    document.getElementById('apply_mode').onclick = () => {
+      console.log('SENDING MODE FOR APPLY mode', selectedMode);
+      parent.postMessage({
+        pluginMessage: {
+          type: 'apply_selected_mode',
+          data: selectedMode
+        }
+      }, '*')
+    }
+
 
     document.getElementById('send').onclick = () => {
       UpdateTranslationModel(null)
@@ -746,41 +726,54 @@
       return svg;
     }
 
-    buildCheckBox = (collection, index) => {
-      collectionContainer = document.createElement("label");
-      collectionContainer.className = "checkbox-container";
-      collectionContainer.innerHTML = collection.name;
-      collectionInput = document.createElement("input");
-      collectionInput.name = collection.name;
-      collectionInput.value = collection.name;
-      collectionInput.type = 'checkbox';
-      collectionInput.checked = true;
-      collectionInput.id = 'collection_' + collection.name;
-      collectionInput.addEventListener('input', function (evt) {
-        if (evt.target.checked) {
-          collectionList.push(collection.name);
-        } else {
-          collectionList = collectionList.filter(item => item !== collection.name)
+    renderModes = (data) => {
+      const tokensPlaceholder = document.getElementById('tokens_placeholder');
+
+
+      header = document.createElement("h3")
+      header.classList.add('header-svgs')
+      header.innerHTML = 'Web Component App Modes';
+      tokensPlaceholder.appendChild(header)
+      modesContainerElmt = document.createElement("div");
+      modesContainerElmt.classList.add('modes-container');
+      modesContainerElmt.innerHTML = data.collectionModes.length + ' modes available';
+      tokensPlaceholder.appendChild(modesContainerElmt);
+
+      // Render modes radio buttons
+      data.collectionModes.forEach((mode, index) => {
+        modeContainer = document.createElement("label");
+        modeContainer.className = "radio-container";
+        modeContainer.innerHTML = mode.name;
+        modeInput = document.createElement("input");
+        modeInput.name = 'mode';
+        modeInput.value = mode.name;
+        modeInput.type = 'radio';
+        modeInput.id = 'mode_' + mode.name;
+        if (mode.name === selectedMode.name) {
+          modeInput.checked = true;
         }
-        updateSyncButton();
-
+        modeInput.addEventListener('input', function (evt) {
+          if (evt.target.checked) {
+            modeName = evt.target.value;
+            console.log('modeName: ', modeName + ' ' +  JSON.stringify(collectionModes));
+            selectedMode = collectionModes.find(m => m.name === modeName);
+            console.log('selected mode:', selectedMode, '--------------');
+            if (selectedMode.name !== defaultMode.name) {
+              document.getElementById('apply_mode').classList.remove('disabled');
+            } else {
+              document.getElementById('apply_mode').classList.add('disabled');
+            }
+          }
+        });
+        modeSpan = document.createElement("span");
+        modeSpan.className = "checkmark";
+        modeContainer.appendChild(modeInput);
+        modeContainer.appendChild(modeSpan);
+        modesContainerElmt.appendChild(modeContainer);
       });
-      collectionSpan = document.createElement("span");
-      collectionSpan.className = "checkmark";
-      collectionContainer.appendChild(collectionInput);
-      collectionContainer.appendChild(collectionSpan);
-      return collectionContainer;
+
     }
 
-    updateSyncButton = () => {
-      if (collectionList.length === 0) {
-        document.getElementById('send').classList.add('disabled');
-        document.getElementById('send').disabled = true;
-      } else {
-        document.getElementById('send').classList.remove('disabled');
-        document.getElementById('send').disabled = false;
-      }
-    }
 
     renderSvgs = (svgs) => {
       const tokensPlaceholder = document.getElementById('tokens_placeholder');
@@ -843,21 +836,63 @@
     }
 
 
+    renderChevron = () => {
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      svg.setAttribute("viewBox", "0 0 16 16");
+      svg.setAttribute("width", "16px");
+      svg.setAttribute("height", "16px");
+      svg.setAttribute("fill", "none");
+      svg.classList.add("chevron-icon");
+      path.setAttribute("d", "M4 6l4 4 4-4");
+      path.setAttribute("stroke", "#1C1C1C");
+      path.setAttribute("stroke-width", "1.5");
+      path.setAttribute("stroke-linecap", "round");
+      path.setAttribute("stroke-linejoin", "round");
+      svg.appendChild(path);
+      return svg;
+    }
+
     renderCollection = (collection) => {
       // Collection header
       const tokensPlaceholder = document.getElementById('tokens_placeholder');
 
-      tokensPlaceholder.appendChild(buildCheckBox(collection));
+      const collectionHeader = document.createElement("div");
+      collectionHeader.className = "collection-header";
 
-      // Collection tokens table
+      const chevron = renderChevron();
+      const nameSpan = document.createElement("span");
+      nameSpan.innerHTML = collection.name;
+
+      collectionHeader.appendChild(chevron);
+      collectionHeader.appendChild(nameSpan);
+      tokensPlaceholder.appendChild(collectionHeader);
+
+      // Collection tokens table — collapsed by default
       variablesNumber = collection.modes[0].variables.length;
       modesNumber = collection.modes.length;
 
       tableElement = document.createElement("table");
       tableElement.id = 'table_' + collection.name;
-      tableElement.style.display = ''
-      tableElement.hidden = false;
-      tokensPlaceholder.appendChild(tableElement)
+      tableElement.style.display = 'none';
+      tableElement.hidden = true;
+      tokensPlaceholder.appendChild(tableElement);
+
+      // Capture table reference now — tableElement is a global and will be
+      // overwritten by the next collection before any click handler fires.
+      const tableRef = tableElement;
+
+      // Toggle collapse on header click
+      collectionHeader.addEventListener('click', () => {
+        const isHidden = tableRef.hidden;
+        tableRef.hidden = !isHidden;
+        tableRef.style.display = isHidden ? '' : 'none';
+        if (isHidden) {
+          chevron.classList.add('expanded');
+        } else {
+          chevron.classList.remove('expanded');
+        }
+      });
 
       trElement = document.createElement("tr");
       tableElement.appendChild(trElement)
@@ -1028,6 +1063,18 @@
 
         svgList = event.data.pluginMessage?.data;
         renderSvgs(event.data.pluginMessage?.data);
+      }
+      if (event.data.pluginMessage.type === 'modes') {
+        document.getElementById('loading_text').style.display = 'none';
+        document.getElementById('mr_tool_bar').style.display = '';
+        document.getElementById('apply_mode').style.display = '';
+        document.getElementById('send').style.display = 'none';
+
+        collectionModes = event.data.pluginMessage?.data.collectionModes;
+        defaultMode = event.data.pluginMessage?.data.currentMode;
+        selectedMode = defaultMode;
+
+        renderModes(event.data.pluginMessage?.data);
       }
       if (event.data.pluginMessage.type === 'mr_creation') {
         UpdateTranslationModel(event.data.pluginMessage)
