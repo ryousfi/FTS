@@ -573,6 +573,22 @@
       if (mode === 'tokens') {
         const selectedCollection = collections.filter(collection => collectionList.includes(collection.name));
 
+        // TODO BEGIN remove once GENE backend is up 
+        // Workaround: also save locally while the backend is down
+        const fileContent = {
+          version: "1.0.0",
+          metadata: {},
+          collections: selectedCollection
+        };
+        const blob = new Blob([JSON.stringify(fileContent, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'uds-variables.json';
+        a.click();
+        URL.revokeObjectURL(url);
+        // TODO END remove once GENE backend is up 
+
         parent.postMessage({
           pluginMessage: {
             type: 'create_mr',
