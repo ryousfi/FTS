@@ -1,4 +1,4 @@
-const URL_BASE = '<URL>';
+const URL_BASE = 'https://my-app.cawbh.whs-at49357-dev-cx-b2e-nch.azpriv-cloud.ubs.net/api/';
 const SYNC_ENDPOINT = URL_BASE + 'update-uwr/';
 const ICONS_SYNC_ENDPOINT = URL_BASE + 'update-uwr-icons/';
 
@@ -28,7 +28,8 @@ if (figma.root.name.includes('UBS Icon Library')) {
   mode = 'modes';
 }
 
-figma.ui.postMessage({ type: 'mode', data: mode });
+const fileName = figma.root.name;
+figma.ui.postMessage({ type: 'mode', data: { mode, fileName } });
 
 
 if (mode === 'icons') {

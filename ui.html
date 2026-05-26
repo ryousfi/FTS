@@ -617,6 +617,7 @@
     let collectionList = [];
     let svgList = [];
     let mode;
+    let fileName = '';
     let selectedMode;
     let defaultMode;
 
@@ -937,6 +938,35 @@
       const panel = document.createElement('div');
       panel.className = 'usage-panel';
 
+      // Dynamic content based on active Figma file / mode
+      let description, stepsList, bannerText;
+
+      if (mode === 'icons') {
+        description = `This plugin extracts SVG icons from <strong>${fileName}</strong> and creates a GitLab merge request to sync them with the @uwr/ubs-themes repository.`;
+        stepsList = [
+          'Wait for the icons to load below, grouped by size (24px, 16px and 12px).',
+          'Review the icons before syncing.',
+          'Click Sync to GitLab to open a merge request on @uwr/ubs-themes with the updated icon files.'
+        ];
+        bannerText = '<strong>Exported sizes:</strong> 24px, 16px, and 12px. Icons are sourced from the Icons page of the Figma file.';
+      } else if (fileName.includes('UBS Color Library')) {
+        description = `This plugin extracts color tokens from <strong>${fileName}</strong> and creates a GitLab merge request to keep the token JSON file in sync with the @uwr/ubs-themes repository.`;
+        stepsList = [
+          'Wait for the token collection to finish loading.',
+          'Expand the collection to inspect tokens before syncing.',
+          'Click Sync to GitLab to open a merge request on @uwr/ubs-themes with the updated token file.'
+        ];
+        bannerText = '<strong>Exported collection:</strong> Primitive UBS Color Tokens. Mobile-specific tokens are automatically excluded.';
+      } else {
+        description = `This plugin extracts design tokens from <strong>${fileName}</strong> and creates a GitLab merge request to keep the token JSON file in sync with the @uwr/ubs-themes repository.`;
+        stepsList = [
+          'Wait for the token collections to finish loading.',
+          'Expand each collection to inspect tokens before syncing.',
+          'Click Sync to GitLab to open a merge request on @uwr/ubs-themes with the updated token file.'
+        ];
+        bannerText = '<strong>Exported collections:</strong> Typography, Spacing, Border, UBS Theme, NOVA PB, NOVA GWM, IB Theme, Component Web App 2.0. Mobile-specific tokens are automatically excluded.';
+      }
+
       // Title row
       const titleRow = document.createElement('div');
       titleRow.className = 'usage-panel-title';
@@ -966,16 +996,13 @@
       // Description
       const desc = document.createElement('p');
       desc.className = 'usage-description';
-      desc.textContent = 'This plugin extracts design tokens from "UDS Styles and Variables" Figma file and creates a GitLab merge request to keep the token JSON file in sync with the UDS 2.0 repository.';
+      desc.innerHTML = description;
       panel.appendChild(desc);
 
       // Steps
       const steps = document.createElement('ol');
       steps.className = 'usage-steps';
-      [
-        'Expand each collection to inspect tokens before syncing.',
-        'Click Sync to GitLab to open a merge request on @uwr/ubs-themes with the updated token file.'
-      ].forEach(text => {
+      stepsList.forEach(text => {
         const li = document.createElement('li');
         li.textContent = text;
         steps.appendChild(li);
@@ -991,7 +1018,7 @@
           <path d="M12 11v6" stroke="#3A5A88" stroke-width="1.5" stroke-linecap="round"/>
           <circle cx="12" cy="7.5" r="0.75" fill="#3A5A88" stroke="#3A5A88" stroke-width="0.5"/>
         </svg>
-        <span><strong>Exported collections:</strong> Typography, Spacing, Border, UBS Theme, NOVA PB, NOVA GWM, IB Theme, Component Web App 2.0. Mobile-specific tokens are automatically excluded.</span>`;
+        <span>${bannerText}</span>`;
       panel.appendChild(banner);
 
       placeholder.appendChild(panel);
@@ -1202,7 +1229,8 @@
 
     onmessage = (event) => {
       if (event.data.pluginMessage.type === 'mode') {
-        mode = event.data.pluginMessage.data;
+        mode = event.data.pluginMessage.data.mode;
+        fileName = event.data.pluginMessage.data.fileName;
       }
       if (event.data.pluginMessage.type === 'tokens') {
         document.getElementById('loading_text').style.display = 'none';
@@ -1224,6 +1252,7 @@
         svgs = event.data.pluginMessage?.data;
 
         svgList = event.data.pluginMessage?.data;
+        renderUsagePanel();
         renderSvgs(event.data.pluginMessage?.data);
       }
       if (event.data.pluginMessage.type === 'modes') {
