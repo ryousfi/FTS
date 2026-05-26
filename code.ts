@@ -71,7 +71,7 @@ if (mode === 'icons') {
     for (const collection of localCollections) {
       console.log('FTS - Processing collection: ' + collection.name);
 
-      const ALLOWED_COLLECTIONS = ['Typography', 'Spacing', 'Border', 'UBS Theme', 'NOVA PB (WIP)', 'IB Theme', 'Component Web App 2.0 (WIP)'];
+      const ALLOWED_COLLECTIONS = ['Typography', 'Spacing', 'Border', 'UBS Theme', 'NOVA PB (WIP)', 'NOVA GWM (WIP)', 'IB Theme', 'Component Web App 2.0 (WIP)'];
       if (!ALLOWED_COLLECTIONS.includes(collection.name)) {
         console.log('FTS - Skipping collection: ' + collection.name);
         continue;
@@ -395,7 +395,14 @@ async function processCollection({ name, modes, variableIds }) {
         await figma.variables.getVariableByIdAsync(variableId);
 
       // Skip mobile specific variables
-      if (name.includes('-mobile')) continue;
+      if (
+        name.includes('-mobile') ||
+        name.includes('mobile-') ||
+        name.includes('-ios') ||
+        name.includes('-android') ||
+        name.includes('android-') ||
+        name.includes('ios-')
+      ) continue;
 
       // For remote/published library collections the collection's modeId
       // format (e.g. "VariableCollectionId:x/y") differs from the short
