@@ -59,11 +59,12 @@ Extracts design token variables and syncs them to the token JSON file in `@uwr/u
 
 **How to use:**
 
-1. Open the plugin from the Figma plugin menu.
-2. Wait for the token collections to finish loading.
-3. Expand any collection to review its tokens before syncing.
-4. Click **Sync to GitLab** to create a merge request on `@uwr/ubs-themes` with the updated token file.
-5. A confirmation page will display a link to the newly created merge request.
+1. Open the correct Figma file (`UDS Styles & Variables` or `UBS Color Library`).
+2. Open the plugin from the Figma plugin menu.
+3. Wait for the token collections to finish loading.
+4. Expand any collection to review its tokens before syncing.
+5. Click **Sync to GitLab** to create a merge request on `@uwr/ubs-themes` with the updated token file.
+6. A confirmation page will display a link to the newly created merge request.
 
 #### Icons mode
 
@@ -71,9 +72,10 @@ Extracts all SVG icons from the `Icons` page (sizes `24px`, `16px`, and `12px`) 
 
 **How to use:**
 
-1. Open the plugin from the Figma plugin menu.
-2. Wait for the icons to load — they are displayed grouped by size for review.
-3. Click **Sync to GitLab** to create a merge request with the updated icon files.
+1. Open the `UBS Icon Library` Figma file.
+2. Open the plugin from the Figma plugin menu.
+3. Wait for the icons to load — they are displayed grouped by size for review.
+4. Click **Sync to GitLab** to create a merge request with the updated icon files.
 
 ---
 
