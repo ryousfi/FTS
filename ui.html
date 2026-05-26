@@ -174,6 +174,7 @@
       gap: 12px;
       height: 50px;
       align-items: center;
+      justify-content: flex-end;
     }
 
     .loading-container {
@@ -331,6 +332,79 @@
       justify-content: start;
       align-items: center;
       gap: 4px;
+    }
+
+    /* USAGE PANEL */
+    .usage-panel {
+      background: #f9f9f7;
+      border: 1px solid #e0e0e0;
+      border-left: 3px solid #404040;
+      border-radius: 4px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+    }
+
+    .usage-panel-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+      color: #1c1c1c;
+      font-size: 13px;
+      font-weight: 600;
+      justify-content: space-between;
+    }
+
+    .usage-panel-title-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .usage-panel-close {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 2px;
+      color: #646464;
+      display: flex;
+      align-items: center;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .usage-panel-close:hover {
+      color: #1c1c1c;
+      background: #e0e0e0;
+    }
+
+    .usage-panel-title svg {
+      flex-shrink: 0;
+    }
+
+    .usage-description {
+      font-size: 12px;
+      color: #646464;
+      margin: 0 0 12px 0;
+      line-height: 1.6;
+    }
+
+    .usage-steps {
+      margin: 0 0 14px 0;
+      padding-left: 18px;
+      font-size: 12px;
+      color: #1c1c1c;
+      line-height: 1.7;
+    }
+
+    .usage-steps li {
+      margin-bottom: 2px;
+    }
+
+    .usage-panel .info-notification {
+      margin-bottom: 0;
+      font-size: 12px;
+      line-height: 1.6;
     }
   </style>
 </head>
@@ -857,6 +931,72 @@
     }
 
 
+    renderUsagePanel = () => {
+      const placeholder = document.getElementById('tokens_placeholder');
+
+      const panel = document.createElement('div');
+      panel.className = 'usage-panel';
+
+      // Title row
+      const titleRow = document.createElement('div');
+      titleRow.className = 'usage-panel-title';
+
+      const titleLeft = document.createElement('div');
+      titleLeft.className = 'usage-panel-title-left';
+      titleLeft.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="10" stroke="#404040" stroke-width="1.5"/>
+          <path d="M12 11v6" stroke="#404040" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="12" cy="7.5" r="0.75" fill="#404040" stroke="#404040" stroke-width="0.5"/>
+        </svg>
+        How to use`;
+
+      const closeBtn = document.createElement('button');
+      closeBtn.className = 'usage-panel-close';
+      closeBtn.title = 'Dismiss';
+      closeBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none">
+        <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>`;
+      closeBtn.addEventListener('click', () => panel.remove());
+
+      titleRow.appendChild(titleLeft);
+      titleRow.appendChild(closeBtn);
+      panel.appendChild(titleRow);
+
+      // Description
+      const desc = document.createElement('p');
+      desc.className = 'usage-description';
+      desc.textContent = 'This plugin extracts design tokens from "UDS Styles and Variables" Figma file and creates a GitLab merge request to keep the token JSON file in sync with the UDS 2.0 repository.';
+      panel.appendChild(desc);
+
+      // Steps
+      const steps = document.createElement('ol');
+      steps.className = 'usage-steps';
+      [
+        'Expand each collection to inspect tokens before syncing.',
+        'Click Sync to GitLab to open a merge request on @uwr/ubs-themes with the updated token file.'
+      ].forEach(text => {
+        const li = document.createElement('li');
+        li.textContent = text;
+        steps.appendChild(li);
+      });
+      panel.appendChild(steps);
+
+      // Info banner
+      const banner = document.createElement('div');
+      banner.className = 'info-notification';
+      banner.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="10" stroke="#3A5A88" stroke-width="1.5"/>
+          <path d="M12 11v6" stroke="#3A5A88" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="12" cy="7.5" r="0.75" fill="#3A5A88" stroke="#3A5A88" stroke-width="0.5"/>
+        </svg>
+        <span><strong>Exported collections:</strong> Typography, Spacing, Border, UBS Theme, NOVA PB, NOVA GWM, IB Theme, Component Web App 2.0. Mobile-specific tokens are automatically excluded.</span>`;
+      panel.appendChild(banner);
+
+      placeholder.appendChild(panel);
+    }
+
     renderChevron = () => {
       const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
       const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -1069,6 +1209,7 @@
         document.getElementById('mr_tool_bar').style.display = ''
 
         collections = event.data.pluginMessage?.data;
+        renderUsagePanel();
         event.data.pluginMessage?.data?.forEach((collection, index) => {
           collectionList.push(
             collection.name,
