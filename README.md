@@ -1,6 +1,6 @@
 # FTS — Figma Tokens Sync
 
-A Figma plugin that extracts design tokens, icons, and component modes from UBS/UDS Figma files and synchronises them to the `@uwr/ubs-themes` GitLab repository via a merge request.
+A Figma plugin that extracts design tokens and icons from UBS/UDS Figma files and synchronises them to the `@uwr/ubs-themes` GitLab repository via a merge request.
 
 ---
 
@@ -11,7 +11,6 @@ A Figma plugin that extracts design tokens, icons, and component modes from UBS/
   - [Modes](#modes)
   - [Tokens mode](#tokens-mode)
   - [Icons mode](#icons-mode)
-  - [Component modes](#component-modes)
 - [Developer guide](#developer-guide)
   - [Prerequisites](#prerequisites)
   - [Project structure](#project-structure)
@@ -34,13 +33,14 @@ The plugin detects the active Figma file automatically and switches to the appro
 | `UDS Styles & Variables` | Tokens |
 | `UBS Color Library` | Tokens |
 | `UBS Icon Library` | Icons |
-| Any other file | Component modes |
 
 ### Modes
 
 #### Tokens mode
 
-Extracts design token variables from the following collections and syncs them to the token JSON file in `@uwr/ubs-themes`:
+Extracts design token variables and syncs them to the token JSON file in `@uwr/ubs-themes`. The exported collections depend on the active Figma file:
+
+**UDS Styles & Variables**
 
 - Typography
 - Spacing
@@ -50,6 +50,10 @@ Extracts design token variables from the following collections and syncs them to
 - NOVA GWM (WIP)
 - IB Theme
 - Component Web App 2.0 (WIP)
+
+**UBS Color Library**
+
+- Primitive UBS Color Tokens
 
 **Note:** Mobile-specific tokens (containing `-mobile`, `mobile-`, `-ios`, `-android`, `android-`, or `ios-` in their name) are automatically excluded from the export.
 
@@ -70,17 +74,6 @@ Extracts all SVG icons from the `Icons` page (sizes `24px`, `16px`, and `12px`) 
 1. Open the plugin from the Figma plugin menu.
 2. Wait for the icons to load — they are displayed grouped by size for review.
 3. Click **Sync to GitLab** to create a merge request with the updated icon files.
-
-#### Component modes
-
-Allows switching the explicit variable mode applied to a selected component (e.g. switching a Component Web App node between available themes).
-
-**How to use:**
-
-1. Select one or more component nodes on the canvas.
-2. Open the plugin — available modes are listed automatically.
-3. Select the desired mode from the list.
-4. Click **Apply selected mode** to apply it to the selected nodes.
 
 ---
 
@@ -147,18 +140,17 @@ The plugin follows the standard Figma two-process model:
 ```
 
 **`code.ts`** — plugin backend:
-- Detects the active mode (tokens / icons / modes) from the Figma file name.
+- Detects the active mode (tokens / icons) from the Figma file name.
 - Extracts local variable collections, resolves aliases, converts values to hex/rgba.
 - Traverses the icon page tree and exports SVG strings.
 - Sends data to the UI via `figma.ui.postMessage`.
-- Handles `create_mr`, `create_mr_icons`, and `apply_selected_mode` messages from the UI by calling the GENE backend API.
+- Handles `create_mr` and `create_mr_icons` messages from the UI by calling the GENE backend API.
 
 **`ui.html`** — plugin UI:
 - Receives data from the sandbox via `onmessage`.
 - Renders token tables with collapsible collection headers.
 - Renders icon grids grouped by size.
-- Renders radio buttons for component mode selection.
-- Posts user actions (`create_mr`, `apply_selected_mode`, etc.) back to the sandbox.
+- Posts user actions (`create_mr`, `create_mr_icons`) back to the sandbox.
 
 **GENE backend endpoints:**
 
