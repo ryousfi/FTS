@@ -1114,10 +1114,7 @@
         for (let j = 0; j < modesNumber; j++) {
           const element = collection.modes[j].variables[i];
           tdElement = document.createElement("td");
-          if (collection.modes[0].variables[i].isAlias) {
-            console.table(collection.modes[0].variables[i])
-          }
-          tdElement.appendChild(renderToken(collection.modes[0].variables[i].type, collection.modes[0].variables[i].value, collection.modes[0].variables[i].isAlias))
+          tdElement.appendChild(renderToken(element.type, element.value, element.isAlias))
           trElement.appendChild(tdElement)
 
         }
