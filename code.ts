@@ -66,23 +66,68 @@ if (mode === 'icons') {
   // Extract collections and variables and send a notification to figma UI
   console.log('FTS - Extracting collections and variables ...');
   (async () => {
+    const ALLOWED_COLLECTIONS = ['Typography', 'Spacing', 'Border', 'UBS Theme', 'NOVA PB (WIP)', 'NOVA GWM (WIP)', 'IB Theme', 'Component Web App 2.0 (WIP)'];
+
     const collections = [];
     const processedCollectionNames = new Set<string>();
     const localCollections = await figma.variables.getLocalVariableCollectionsAsync();
-    for (const collection of localCollections) {
-      console.log('FTS - Processing collection: ' + collection.name);
 
-      const ALLOWED_COLLECTIONS = ['Typography', 'Spacing', 'Border', 'UBS Theme', 'NOVA PB (WIP)', 'NOVA GWM (WIP)', 'IB Theme', 'Component Web App 2.0 (WIP)'];
-      if (!ALLOWED_COLLECTIONS.includes(collection.name)) {
-        console.log('FTS - Skipping collection: ' + collection.name);
-        continue;
+    // collection.variableIds is unreliable for extended collections (it returns the
+    // parent collection's variables). Build the real ownership map ourselves.
+    const allLocalVars = await figma.variables.getLocalVariablesAsync();
+    const ownedByCollection = new Map<string, any[]>();
+    for (const v of allLocalVars) {
+      const list = ownedByCollection.get(v.variableCollectionId);
+      if (list) list.push(v); else ownedByCollection.set(v.variableCollectionId, [v]);
+    }
+
+    // Index every modeId -> owning collection so we can walk parentModeId chains
+    // from an extended collection up to the source collection that owns the variables.
+    const collectionByModeId = new Map<string, any>();
+    for (const c of localCollections) {
+      for (const m of c.modes) collectionByModeId.set(m.modeId, c);
+    }
+
+    const findSourceCollection = (extended: any): any | null => {
+      let modeId: string | undefined = extended.modes[0]?.parentModeId;
+      const seen = new Set<string>();
+      while (modeId && !seen.has(modeId)) {
+        seen.add(modeId);
+        const c = collectionByModeId.get(modeId);
+        if (!c) return null;
+        if ((ownedByCollection.get(c.id) || []).length > 0) return c;
+        const m = c.modes.find((mm: any) => mm.modeId === modeId);
+        modeId = m?.parentModeId;
       }
+      return null;
+    };
+
+    for (const collection of localCollections) {
+      if (!ALLOWED_COLLECTIONS.includes(collection.name)) continue;
       if (processedCollectionNames.has(collection.name)) {
         console.log('FTS - Duplicate collection skipped: ' + collection.name);
         continue;
       }
       processedCollectionNames.add(collection.name);
-      collections.push(await processCollection(collection));
+      console.log('FTS - Processing collection: ' + collection.name);
+
+      const owned = ownedByCollection.get(collection.id) || [];
+      if (owned.length > 0) {
+        // Source collection — read variable.valuesByMode directly.
+        collections.push(await processCollection(collection, owned, null));
+        continue;
+      }
+
+      // Extended collection — variables live in the parent. Use the source's variables
+      // and look up override+inherited values via valuesByModeForCollectionAsync.
+      const source = findSourceCollection(collection);
+      if (!source) {
+        console.log(`FTS - Skipping "${collection.name}": no source collection found via parentModeId chain`);
+        continue;
+      }
+      const sourceVars = ownedByCollection.get(source.id) || [];
+      console.log(`FTS - "${collection.name}" extends "${source.name}" (${sourceVars.length} inherited vars)`);
+      collections.push(await processCollection(collection, sourceVars, collection));
     }
 
     // Render text messages
@@ -366,135 +411,75 @@ async function fetchWithErrorHandling(url: any, options = {}) {
 
 
 /**
- * Process a Figma variable collection
+ * Process a Figma variable collection.
+ *
+ * - `collection` is the collection being exported (source OR extended).
+ * - `variables` is the list of source Variable objects whose values should be read.
+ *   For a source collection that's its own variables; for an extended collection
+ *   that's the variables of the source it inherits from.
+ * - `extendedCollection` is non-null when `collection` is an extended collection.
+ *   In that case we resolve per-mode values via
+ *   variable.valuesByModeForCollectionAsync(extendedCollection), which returns
+ *   the override (or inherited) value keyed by the extended collection's mode IDs.
  */
-async function processCollection({ name, modes, variableIds }) {
-
+async function processCollection(collection: any, variables: any[], extendedCollection: any | null) {
   const collectionDate = {
-    name,
-    modes: [],
-  }
+    name: collection.name,
+    modes: collection.modes.map((m: any) => ({ name: m.name, variables: [] as any[] })),
+  };
 
-  // Cache variable collection lookups to avoid redundant async calls when
-  // remote/published collections use a different modeId format than valuesByMode keys.
-  const varCollectionCache = new Map<string, any>();
+  for (const variable of variables) {
+    const { name, resolvedType } = variable;
 
-  for (const mode of modes) {
+    // Skip mobile-specific variables
+    if (
+      name.includes('-mobile') ||
+      name.includes('mobile-') ||
+      name.includes('-ios') ||
+      name.includes('-android') ||
+      name.includes('android-') ||
+      name.includes('ios-')
+    ) continue;
 
-    console.log('Mode: ' + mode.name)
-    const modeData = {
-      name: mode.name,
-      variables: []
-    }
-    for (const variableId of variableIds) {
-      let variableData = {
-      }
+    // Resolve the values map once per variable.
+    const valuesByMode: { [k: string]: any } = extendedCollection
+      ? await variable.valuesByModeForCollectionAsync(extendedCollection)
+      : variable.valuesByMode;
 
-      let isAlias = false;
+    for (let i = 0; i < collection.modes.length; i++) {
+      const mode = collection.modes[i];
+      const value: any = valuesByMode[mode.modeId];
+      if (value === undefined || value === null) continue;
 
-      const { name, resolvedType, valuesByMode, variableCollectionId } =
-        await figma.variables.getVariableByIdAsync(variableId);
-
-      // Skip mobile specific variables
-      if (
-        name.includes('-mobile') ||
-        name.includes('mobile-') ||
-        name.includes('-ios') ||
-        name.includes('-android') ||
-        name.includes('android-') ||
-        name.includes('ios-')
-      ) continue;
-
-      // For remote/published library collections the collection's modeId
-      // format (e.g. "VariableCollectionId:x/y") differs from the short
-      // numeric keys in valuesByMode. Fall back to matching by mode name.
-      let modeIdToUse = mode.modeId;
-      if (valuesByMode[modeIdToUse] === undefined) {
-        if (!varCollectionCache.has(variableCollectionId)) {
-          varCollectionCache.set(
-            variableCollectionId,
-            await figma.variables.getVariableCollectionByIdAsync(variableCollectionId)
-          );
-        }
-        const varCol = varCollectionCache.get(variableCollectionId);
-        const match = varCol?.modes.find((m: any) => m.name === mode.name);
-        if (match) modeIdToUse = match.modeId;
-      }
-
-      const value: any = valuesByMode[modeIdToUse];
-      // if (value !== undefined && ["COLOR", "FLOAT"].includes(resolvedType)) {
-
-      // TODO check this part
-      let obj: any = {};
-      name.split("/").forEach((groupName) => {
-        obj[groupName] = obj[groupName] || {};
-        obj = obj[groupName];
-      });
-      // TODO change type to string, color, number and boolean
-      //   obj.$type = resolvedType === "COLOR" ? "color" : "number";
       let convertedType = '';
       switch (resolvedType) {
-        case 'COLOR':
-          convertedType = 'color';
-          break;
-
-        case 'FLOAT':
-          convertedType = 'number';
-
-          break;
-
-        case 'STRING':
-          convertedType = 'string';
-
-          break;
-
-        case 'BOOLEAN':
-          convertedType = 'boolean';
-
-          break;
-
-        default:
-          break;
+        case 'COLOR': convertedType = 'color'; break;
+        case 'FLOAT': convertedType = 'number'; break;
+        case 'STRING': convertedType = 'string'; break;
+        case 'BOOLEAN': convertedType = 'boolean'; break;
       }
-      // Guard: a variable may not have a value defined for every mode
-      // (e.g. if the mode was added after the variable was created).
-      if (value === undefined || value === null) {
-        console.log(`WARN - No value defined for mode "${mode.name}" (${mode.modeId}) in variable "${name}" — skipping`);
-        continue;
-      }
-      if (value.type === "VARIABLE_ALIAS") {
+
+      let exportedValue: any;
+      let isAlias = false;
+      if (value.type === 'VARIABLE_ALIAS') {
         isAlias = true;
-        const currentVar = await figma.variables.getVariableByIdAsync(
-          value.id
-        );
-
-        const currentCol = await figma.variables.getVariableCollectionByIdAsync(
-          currentVar.variableCollectionId
-        );
-
-        obj.$value = {
-          collection: currentCol.name,
-          name: currentVar.name
-
-        }
+        const aliasVar = await figma.variables.getVariableByIdAsync(value.id);
+        const aliasCol = await figma.variables.getVariableCollectionByIdAsync(aliasVar.variableCollectionId);
+        exportedValue = {
+          collection: aliasCol.name,
+          name: aliasVar.name,
+        };
       } else {
-        obj.$value = resolvedType === "COLOR" ? rgbToHex(value) : value;
+        exportedValue = resolvedType === 'COLOR' ? rgbToHex(value) : value;
       }
 
-
-      variableData = {
+      collectionDate.modes[i].variables.push({
         name,
         type: convertedType,
         isAlias,
-        value: obj.$value
-      }
-
-
-      modeData.variables.push(variableData)
-      //  }
+        value: exportedValue,
+      });
     }
-    collectionDate.modes.push(modeData)
-
   }
   return collectionDate;
 }
