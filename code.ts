@@ -12,7 +12,7 @@ figma.showUI(__html__, {
 // Check whether to sync tokens or icons
 let mode: 'tokens' | 'icons' | 'modes';
 let componentWebAppCollection = null;
-let filePath = 'src/assets/tokens/uds-variables.json';
+let filePath = 'packages/themes/src/tokens/tokens.json';
 
 // add switch case mode
 if (figma.root.name.includes('UBS Icon Library')) {
@@ -22,7 +22,7 @@ if (figma.root.name.includes('UBS Icon Library')) {
   console.log('FTS - Tokens sync mode detected');
   mode = 'tokens';
 
-  figma.root.name.includes('UDS Styles & Variables') ? filePath = 'src/assets/tokens/uds-variables.json' : filePath = 'figma-variables/ubs-colors.json';
+  figma.root.name.includes('UDS Styles & Variables') ? filePath = 'packages/themes/src/tokens/tokens.json' : filePath = 'packages/themes/src/tokens/primitive-colors.json';
 } else {
   console.log('FTS - Modes sync mode detected');
   mode = 'modes';
@@ -66,19 +66,26 @@ if (mode === 'icons') {
   // Extract collections and variables and send a notification to figma UI
   console.log('FTS - Extracting collections and variables ...');
   (async () => {
-    const ALLOWED_COLLECTIONS = ['Typography', 'Spacing', 'Border', 'UBS Theme', 'NOVA PB (WIP)', 'NOVA GWM (WIP)', 'IB Theme', 'Component Web App 2.0 (WIP)'];
+    const ALLOWED_COLLECTIONS = ['Typography', 'Spacing', 'Border', 'UBS Theme', 'NOVA PB (WIP)', 'NOVA GWM (WIP)', 'IB Theme', 'Component Web App 2.0 (WIP)', 'Primitive UBS Color Tokens'];
 
     const collections = [];
     const processedCollectionNames = new Set<string>();
     const localCollections = await figma.variables.getLocalVariableCollectionsAsync();
 
     // collection.variableIds is unreliable for extended collections (it returns the
-    // parent collection's variables). Build the real ownership map ourselves.
+    // parent collection's variables). Build real ownership ourselves, while keeping
+    // the user-defined display order from the source collection's variableIds.
     const allLocalVars = await figma.variables.getLocalVariablesAsync();
+    const varById = new Map<string, any>();
+    for (const v of allLocalVars) varById.set(v.id, v);
     const ownedByCollection = new Map<string, any[]>();
-    for (const v of allLocalVars) {
-      const list = ownedByCollection.get(v.variableCollectionId);
-      if (list) list.push(v); else ownedByCollection.set(v.variableCollectionId, [v]);
+    for (const c of localCollections) {
+      const ordered: any[] = [];
+      for (const vid of c.variableIds) {
+        const v = varById.get(vid);
+        if (v && v.variableCollectionId === c.id) ordered.push(v);
+      }
+      if (ordered.length > 0) ownedByCollection.set(c.id, ordered);
     }
 
     // Index every modeId -> owning collection so we can walk parentModeId chains

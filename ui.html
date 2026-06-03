@@ -664,7 +664,7 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'uds-variables.json';
+        a.download = 'tokens.json';
         a.click();
         URL.revokeObjectURL(url);
         // TODO END remove once GENE backend is up 
