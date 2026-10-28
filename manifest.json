@@ -3,7 +3,7 @@
   "id": "1478388170070762369",
   "api": "1.0.0",
   "main": "code.js",
-  "capabilities": [],
+  "capabilities": ["inspect"],
   "enableProposedApi": false,
   "documentAccess": "dynamic-page",
 

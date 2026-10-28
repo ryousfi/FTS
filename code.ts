@@ -1,4 +1,4 @@
-const URL_BASE = '<URL>';
+const URL_BASE = 'https://my-app.cawbh.whs-at49357-dev-cx-b2e-nch.azpriv-cloud.ubs.net/api/';
 const SYNC_ENDPOINT = URL_BASE + 'update-uwr/';
 const ICONS_SYNC_ENDPOINT = URL_BASE + 'update-uwr-icons/';
 
@@ -66,7 +66,7 @@ if (mode === 'icons') {
   // Extract collections and variables and send a notification to figma UI
   console.log('FTS - Extracting collections and variables ...');
   (async () => {
-    const ALLOWED_COLLECTIONS = ['Typography', 'Spacing', 'Border', 'UBS Theme', 'NOVA PB (WIP)', 'NOVA GWM (WIP)', 'IB Theme', 'Component Web App 2.0 (WIP)', 'Primitive UBS Color Tokens'];
+    const ALLOWED_COLLECTIONS = ['Typography', 'Spacing', 'Border', 'UBS Theme', 'NOVA PB', 'NOVA WM', 'IB Theme (WIP)', 'Component Web App 2.0 (WIP)', 'Primitive UBS Color Tokens'];
 
     const collections = [];
     const processedCollectionNames = new Set<string>();
@@ -495,10 +495,12 @@ async function processCollection(collection: any, variables: any[], extendedColl
  * Convert Figma RGB color to hex or rgba string
  */
 function rgbToHex({ r, g, b, a }) {
-  if (a !== 1) {
+  // Figma color values are RGB | RGBA — a is absent on colors with no alpha channel
+  const alpha = a === undefined ? 1 : a;
+  if (alpha !== 1) {
     return `rgba(${[r, g, b]
       .map((n) => Math.round(n * 255))
-      .join(", ")}, ${a.toFixed(4)})`;
+      .join(", ")}, ${alpha.toFixed(4)})`;
   }
   const toHex = (value) => {
     const hex = Math.round(value * 255).toString(16);
