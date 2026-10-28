@@ -1,4 +1,4 @@
-const URL_BASE = 'https://my-app.cawbh.whs-at49357-dev-cx-b2e-nch.azpriv-cloud.ubs.net/api/';
+const URL_BASE = '<URL>';
 const SYNC_ENDPOINT = URL_BASE + 'update-uwr/';
 const ICONS_SYNC_ENDPOINT = URL_BASE + 'update-uwr-icons/';
 
