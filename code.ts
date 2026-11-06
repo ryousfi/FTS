@@ -73,8 +73,8 @@ if (mode === 'icons') {
     const localCollections = await figma.variables.getLocalVariableCollectionsAsync();
 
     // collection.variableIds is unreliable for extended collections (it returns the
-    // parent collection's variables). Build real ownership ourselves, while keeping
-    // the user-defined display order from the source collection's variableIds.
+    // parent collection's variables). Build real ownership ourselves; export order is
+    // normalized separately below.
     const allLocalVars = await figma.variables.getLocalVariablesAsync();
     const varById = new Map<string, any>();
     for (const v of allLocalVars) varById.set(v.id, v);
@@ -109,7 +109,12 @@ if (mode === 'icons') {
       return null;
     };
 
-    for (const collection of localCollections) {
+    const orderedCollections = [...localCollections].sort((a, b) => {
+      const orderDifference = ALLOWED_COLLECTIONS.indexOf(a.name) - ALLOWED_COLLECTIONS.indexOf(b.name);
+      return orderDifference || compareText(a.id, b.id);
+    });
+
+    for (const collection of orderedCollections) {
       if (!ALLOWED_COLLECTIONS.includes(collection.name)) continue;
       if (processedCollectionNames.has(collection.name)) {
         console.log('FTS - Duplicate collection skipped: ' + collection.name);
@@ -430,12 +435,18 @@ async function fetchWithErrorHandling(url: any, options = {}) {
  *   the override (or inherited) value keyed by the extended collection's mode IDs.
  */
 async function processCollection(collection: any, variables: any[], extendedCollection: any | null) {
+  const modes = [...collection.modes].sort((a: any, b: any) =>
+    compareText(a.name, b.name) || compareText(a.modeId, b.modeId)
+  );
   const collectionDate = {
     name: collection.name,
-    modes: collection.modes.map((m: any) => ({ name: m.name, variables: [] as any[] })),
+    modes: modes.map((m: any) => ({ name: m.name, variables: [] as any[] })),
   };
 
-  for (const variable of variables) {
+  const orderedVariables = [...variables].sort((a: any, b: any) =>
+    compareText(a.name, b.name) || compareText(a.id, b.id)
+  );
+  for (const variable of orderedVariables) {
     const { name, resolvedType } = variable;
 
     // Skip mobile-specific variables
@@ -453,8 +464,8 @@ async function processCollection(collection: any, variables: any[], extendedColl
       ? await variable.valuesByModeForCollectionAsync(extendedCollection)
       : variable.valuesByMode;
 
-    for (let i = 0; i < collection.modes.length; i++) {
-      const mode = collection.modes[i];
+    for (let i = 0; i < modes.length; i++) {
+      const mode = modes[i];
       const value: any = valuesByMode[mode.modeId];
       if (value === undefined || value === null) continue;
 
@@ -489,6 +500,10 @@ async function processCollection(collection: any, variables: any[], extendedColl
     }
   }
   return collectionDate;
+}
+
+function compareText(a: string, b: string): number {
+  return a < b ? -1 : a > b ? 1 : 0;
 }
 
 /**
