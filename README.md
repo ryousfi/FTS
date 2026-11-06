@@ -57,6 +57,8 @@ Extracts design token variables and syncs them to the token JSON file in `@uwr/u
 
 **Note:** Mobile-specific tokens (containing `-mobile`, `mobile-`, `-ios`, `-android`, `android-`, or `ios-` in their name) are automatically excluded from the export.
 
+Collections follow the plugin's configured order; modes and tokens are sorted alphabetically by name for consistent exports.
+
 **How to use:**
 
 1. Open the correct Figma file (`UDS Styles & Variables` or `UBS Color Library`).
